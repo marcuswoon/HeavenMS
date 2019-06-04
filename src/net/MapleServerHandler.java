@@ -34,6 +34,7 @@ import org.apache.mina.core.session.IoSession;
 
 import client.MapleClient;
 import constants.ServerConstants;
+import java.net.InetSocketAddress;
 
 import net.server.Server;
 import net.server.audit.locks.MonitoredLockType;
@@ -87,22 +88,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
     
     @Override
-    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        if (cause instanceof org.apache.mina.core.write.WriteToClosedSessionException) {
-            return;
-        }
-        
-        /*
-    	System.out.println("disconnect by exception");
-        cause.printStackTrace();
-        */
-        
-        if (cause instanceof IOException || cause instanceof ClassCastException) {
-            return;
-        }
-        MapleClient mc = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-        if (mc != null && mc.getPlayer() != null) {
-            FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, cause, "Exception caught by: " + mc.getPlayer());
+    public void exceptionCaught(IoSession session, Throwable cause) {
+        if (cause instanceof IOException) {
+            closeMapleSession(session);
+        } else {
+            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            
+            if (client != null && client.getPlayer() != null) {
+                FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, cause, "Exception caught by: " + client.getPlayer());
+            }
         }
     }
 
@@ -112,6 +106,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
     
     @Override
     public void sessionOpened(IoSession session) {
+        String remoteHost;
+        try {
+            remoteHost = ((InetSocketAddress) session.getRemoteAddress()).getAddress().getHostAddress();
+            
+            if (remoteHost == null) {
+                remoteHost = "null";
+            }
+        } catch (NullPointerException npe) {    // thanks Agassy, Alchemist for pointing out possibility of remoteHost = null.
+            remoteHost = "null";
+        }
+        
+        session.setAttribute(MapleClient.CLIENT_REMOTE_ADDRESS, remoteHost);
+        
         if (!Server.getInstance().isOnline()) {
             MapleSessionCoordinator.getInstance().closeSession(session, true);
             return;
@@ -144,8 +151,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         session.setAttribute(MapleClient.CLIENT_KEY, client);
     }
 
-    @Override
-    public void sessionClosed(IoSession session) throws Exception {
+    private void closeMapleSession(IoSession session) {
         if (isLoginServerHandler()) {
             MapleSessionCoordinator.getInstance().closeLoginSession(session);
         } else {
@@ -155,19 +161,23 @@ public class MapleServerHandler extends IoHandlerAdapter {
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         if (client != null) {
             try {
-                boolean inCashShop = false;
-                if (client.getPlayer() != null) {
-                    inCashShop = client.getPlayer().getCashShop().isOpened();
+                // client freeze issues on session transition states found thanks to yolinlin, Omo Oppa, Nozphex
+                if (!session.containsAttribute(MapleClient.CLIENT_TRANSITION)) {
+                    client.disconnect(false, false);
                 }
-                client.disconnect(false, inCashShop);
             } catch (Throwable t) {
                 FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, t);
             } finally {
                 session.close();
-                session.removeAttribute(MapleClient.CLIENT_KEY);      
+                session.removeAttribute(MapleClient.CLIENT_KEY);
                 //client.empty();
             }
         }
+    }
+    
+    @Override
+    public void sessionClosed(IoSession session) throws Exception {
+        closeMapleSession(session);
         super.sessionClosed(session);
     }
 

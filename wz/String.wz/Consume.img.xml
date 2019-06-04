@@ -130,7 +130,7 @@
   </imgdir>
   <imgdir name="2002009">
     <string name="name" value="Dexterity Pill"/>
-    <string name="desc" value="A pill of concentrated dexterity potion. Avoidablity + 10 for 10 minutes"/>
+    <string name="desc" value="A pill of concentrated dexterity potion. Avoidability + 10 for 10 minutes"/>
   </imgdir>
   <imgdir name="2002010">
     <string name="name" value="Speed Pill"/>
@@ -338,7 +338,7 @@
   </imgdir>
   <imgdir name="2020020">
     <string name="name" value="Wedding Cake"/>
-    <string name="desc" value="A Wedding cake that coming  Recovers 2000 HP and MP."/>
+    <string name="desc" value="A Wedding cake that coming. Recovers 2000 HP and MP."/>
   </imgdir>
   <imgdir name="2020021">
     <string name="name" value="Nemi&apos;s Lunch Box"/>
@@ -778,7 +778,7 @@
   </imgdir>
   <imgdir name="2022112">
     <string name="name" value="Baby Witch"/>
-    <string name="desc" value="Weapon Attack +20, Magic Attack +30 nfor 15 minutes."/>
+    <string name="desc" value="Weapon Attack +20, Magic Attack +30 for 15 minutes."/>
   </imgdir>
   <imgdir name="2022113">
     <string name="name" value="Pumpkin Pie"/>
@@ -798,7 +798,7 @@
   </imgdir>
   <imgdir name="2022119">
     <string name="name" value="Tree Ornament"/>
-    <string name="desc" value="Weapon Attack +20, Magic Attack +30 forn15 minutes."/>
+    <string name="desc" value="Weapon Attack +20, Magic Attack +30 for 15 minutes."/>
   </imgdir>
   <imgdir name="2022120">
     <string name="name" value="Christmas Melon"/>
@@ -1468,7 +1468,7 @@
     <string name="desc" value="Returns you to Sleepywood, a quiet and dark forest-town."/>
   </imgdir>
   <imgdir name="2030007">
-    <string name="name" value="Return Scroll for Dead Mine"/>
+    <string name="name" value="Return Scroll to Dead Mine"/>
     <string name="desc" value="Returns you to the dead mine at the higher ground of El Nath.nCan only be used in Orbis and El Nath."/>
   </imgdir>
   <imgdir name="2030008">
@@ -1496,7 +1496,7 @@
     <string name="desc" value="Warp powder made by fairy Phyllia.  Teleports you to Magatia when used inside the Nihal desert region."/>
   </imgdir>
   <imgdir name="2030019">
-    <string name="name" value="Nautilus Return Scroll"/>
+    <string name="name" value="Return Scroll to Nautilus"/>
     <string name="desc" value="This scroll enables you to return to the Pirate village, Nautilus. This is a one use item and will disappear after use."/>
   </imgdir>
   <imgdir name="2030100">
@@ -1745,18 +1745,18 @@
   </imgdir>
   <imgdir name="2040306">
     <string name="name" value="Dark scroll for Earring for DEX"/>
-    <string name="desc" value="Improves DEX on ear accesrroy.\nSuccess rate: 70%. DEX + 2nIf failed, the item will be destroyed at a 50% rate."/>
+    <string name="desc" value="Improves DEX on ear accessory.\nSuccess rate: 70%. DEX + 2nIf failed, the item will be destroyed at a 50% rate."/>
   </imgdir>
   <imgdir name="2040307">
     <string name="name" value="Dark scroll for Earring for DEX"/>
     <string name="desc" value="Improves DEX on ear accessorynSuccess rate: 30%. DEX + 3nIf failed, the item will be destroyed at a 50% rate."/>
   </imgdir>
   <imgdir name="2040308">
-    <string name="name" value="Dark Scroll for Earrings for DEF"/>
+    <string name="name" value="Dark Scroll for Earring for DEF"/>
     <string name="desc" value="Improves DEF on earringsnSuccess Rate 70%, weapon defense+1, magic defense+1nIf failed, the item will be destroyed at a 50% rate."/>
   </imgdir>
   <imgdir name="2040309">
-    <string name="name" value="Dark Scroll for Earrings for DEF"/>
+    <string name="name" value="Dark Scroll for Earring for DEF"/>
     <string name="desc" value="Improves DEF on earringsnSuccess Rate 30%, weapon defense+3, magic defense+3, accuracy+1nIf failed, the item will be destroyed at a 50% rate."/>
   </imgdir>
   <imgdir name="2040310">
@@ -2301,7 +2301,7 @@
   </imgdir>
   <imgdir name="2040800">
     <string name="name" value="Scroll for Gloves for DEX"/>
-    <string name="desc" value="Improves dexterity on gloves.\nSuccess rate:100%, accurcacy +1"/>
+    <string name="desc" value="Improves dexterity on gloves.\nSuccess rate:100%, accuracy +1"/>
   </imgdir>
   <imgdir name="2040801">
     <string name="name" value="Scroll for Gloves for DEX"/>
@@ -3545,7 +3545,7 @@
   </imgdir>
   <imgdir name="2044905">
     <string name="name" value="[4yrAnniv] Gun for Attack 40%"/>
-    <string name="desc" value="Improves the attact on Maple Canon Shooter. nSuccess rate:40%, weapon att.+3,naccuracy+2nIf failed, the item will be destroyed at a 30% rate."/>
+    <string name="desc" value="Improves the attact on Maple Canon Shooter. nSuccess rate:40%, weapon att.+3, accuracy+2nIf failed, the item will be destroyed at a 30% rate."/>
   </imgdir>
   <imgdir name="2048000">
     <string name="name" value="Scroll for Pet Equip. for Speed"/>
@@ -3769,11 +3769,11 @@
   </imgdir>
   <imgdir name="2070012">
     <string name="name" value="Paper Fighter Plane"/>
-    <string name="desc" value="A paper plane that can be thrown at things. Once they run out, they need to be recharged. Attack +20"/>
+    <string name="desc" value="A paper plane that can be thrown at things. Once they run out, they need to be recharged.\nAttack +20"/>
   </imgdir>
   <imgdir name="2070013">
     <string name="name" value="Orange"/>
-    <string name="desc" value="A tasty orange that can be thrown at things. Attack + 20"/>
+    <string name="desc" value="A tasty orange that can be thrown at things.\nAttack + 20"/>
   </imgdir>
   <imgdir name="2070015">
     <string name="name" value="A Beginner Thief&apos;s Throwing Stars"/>
@@ -4588,7 +4588,7 @@
   </imgdir>
   <imgdir name="2280004">
     <string name="name" value="[Skill Book] Infinity"/>
-    <string name="desc" value="You can learn #Infinity# with this book.rnJob : 4th Advancement MagicianrnCondition : #cInfinity# not acquired"/>
+    <string name="desc" value="You can learn #cInfinity# with this book.rnJob : 4th Advancement MagicianrnCondition : #cInfinity# not acquired"/>
   </imgdir>
   <imgdir name="2280005">
     <string name="name" value="[Skill Book] Dragon&apos;s Breath"/>
@@ -5225,7 +5225,7 @@
   </imgdir>
   <imgdir name="2382068">
     <string name="name" value="Moon Bunny Card"/>
-    <string name="desc" value="A card that features Moon Bnny.n#cIf hunting at the Black MountainnJump +1#"/>
+    <string name="desc" value="A card that features Moon Bunny.n#cIf hunting at the Black MountainnJump +1#"/>
   </imgdir>
   <imgdir name="2382069">
     <string name="name" value="Iron Boar Card"/>
@@ -5273,7 +5273,7 @@
   </imgdir>
   <imgdir name="2383006">
     <string name="name" value="Jar Card"/>
-    <string name="desc" value="A card that features Jar.n#cIf hunting at Herb Townn소비Item drop rates are increased#"/>
+    <string name="desc" value="A card that features Jar.n#cIf hunting at Herb Townn#cItem drop rates are increased#"/>
   </imgdir>
   <imgdir name="2383007">
     <string name="name" value="Mithril Mutae Card"/>
@@ -5289,7 +5289,7 @@
   </imgdir>
   <imgdir name="2383010">
     <string name="name" value="Ginseng Jar"/>
-    <string name="desc" value="A card that features Ginseng Jar.n#cIf hunting at Herb Townnthe &quot;Use&quot; item drop rates are increased#"/>
+    <string name="desc" value="A card that features Ginseng Jar.n#cIf hunting at Herb TownnThe &quot;Use&quot; item drop rates are increased#"/>
   </imgdir>
   <imgdir name="2383011">
     <string name="name" value="Chief Grey Card"/>
@@ -5328,8 +5328,8 @@
     <string name="desc" value="A card that features Croco.n#cIf hunting at the SwampnAvoidability +2#"/>
   </imgdir>
   <imgdir name="2383020">
-    <string name="name" value="Luster Pixe Card"/>
-    <string name="desc" value="A card that features Luster Pixe.n#cIf hunting at Cloud ParknAccuracy +2#"/>
+    <string name="name" value="Luster Pixie Card"/>
+    <string name="desc" value="A card that features Luster Pixie.n#cIf hunting at Cloud ParknAccuracy +2#"/>
   </imgdir>
   <imgdir name="2383021">
     <string name="name" value="Cellion Card"/>
@@ -5978,10 +5978,6 @@
   <imgdir name="2388027">
     <string name="name" value="Rudolph Card"/>
     <string name="desc" value="A card that features Santa&apos;s favorite, Rudolph."/>
-    <imgdir name="2390001">
-      <string name="name" value="Helena&apos;s Marble"/>
-      <string name="desc" value="A marble given by Helena. Use this to communicate with her regardless of the place. This item is good for one-time use only..."/>
-    </imgdir>
   </imgdir>
   <imgdir name="2388028">
     <string name="name" value="Kid Snowman Card"/>
@@ -6524,11 +6520,11 @@
     <string name="desc" value="Improves Accuracy on Knuckles.\nSuccess Rate:15%, Accuracy+5, DEX+3, Weapon Att+3"/>
   </imgdir>
   <imgdir name="2044906">
-    <string name="name" value="Gun ATT Scroll 65%"/>
+    <string name="name" value="Scroll for Gun for ATT 65%"/>
     <string name="desc" value="Improves ATT on guns.\nSuccess Rate:65%, Weapon Att.+2, Accuracy+1"/>
   </imgdir>
   <imgdir name="2044907">
-    <string name="name" value="Gun ATT Scroll 15%"/>
+    <string name="name" value="Scroll for Gun for ATT 15%"/>
     <string name="desc" value="Improves ATT on guns.\nSuccess Rate:15%, Weapon Att.+5, Accuracy+3, DEX+1"/>
   </imgdir>
   <imgdir name="2049103">
@@ -6697,7 +6693,7 @@
   </imgdir>
   <imgdir name="2210017">
     <string name="name" value="Moon Photo"/>
-    <string name="desc" value="The more you look at it, the more you feel lightheaded… and you feel closer to the moon."/>
+    <string name="desc" value="The more you look at it, the more you feel lightheaded... and you feel closer to the moon."/>
   </imgdir>
   <imgdir name="2210018">
     <string name="name" value="Sweet Rice Cake"/>
@@ -6737,7 +6733,7 @@
   </imgdir>
   <imgdir name="2388046">
     <string name="name" value="Mu Gong Card"/>
-    <string name="desc" value="A card with a drawing of Moo Gong on it.n#cWhen hunting in Mu Lungnincrease Item/Meso drop rate.#"/>
+    <string name="desc" value="A card with a drawing of Moo Gong on it.n#cWhen hunting in Mu LungnIncreases Item/Meso drop rate.#"/>
   </imgdir>
   <imgdir name="2430004">
     <string name="name" value="Richie Gold&apos;s Random Key Pot"/>
@@ -7073,7 +7069,7 @@
   </imgdir>
   <imgdir name="2022542">
     <string name="name" value="Little Lamb&apos;s Surprise Attack"/>
-    <string name="desc" value="Attacks a Wolf&apos;s back, temporarily immobolizing it."/>
+    <string name="desc" value="Attacks a Wolf&apos;s back, temporarily immobilizing it."/>
   </imgdir>
   <imgdir name="2022543">
     <string name="name" value="Great Confusion"/>
@@ -7141,7 +7137,7 @@
   </imgdir>
   <imgdir name="2040731">
     <string name="name" value="Balrog&apos;s DEX Scroll 30%"/>
-    <string name="desc" value="Improves DEX on Balrog Leather Shoes. nSucess rate: 30%, DEX +2"/>
+    <string name="desc" value="Improves DEX on Balrog Leather Shoes. nSuccess rate: 30%, DEX +2"/>
   </imgdir>
   <imgdir name="2040732">
     <string name="name" value="Balrog&apos;s HP Scroll 30%"/>
@@ -7349,10 +7345,10 @@
   </imgdir>
   <imgdir name="2049106">
     <string name="name" value="[6th Anniversary] Dark Scroll for Gloves for ATT 30%"/>
-    <string name="desc" value="Improves ATT on Gloves. nSucces rate: 30%, Weapons ATT +2nIf unsuccessful, item has an 80% chance of being destroyed."/>
+    <string name="desc" value="Improves ATT on Gloves. nSuccess rate: 30%, Weapons ATT +2nIf unsuccessful, item has an 80% chance of being destroyed."/>
   </imgdir>
   <imgdir name="2049107">
-    <string name="name" value="[6th Anniversary] Dark Scroll for Gloves for STR 70%   ["/>
+    <string name="name" value="[6th Anniversary] Dark Scroll for Gloves for STR 70%"/>
     <string name="desc" value="Improves STR on Gloves. nSuccess rate: 70%, Accuracy +2, STR +1nIf unsuccessful, item has a 50% chance of being destroyed."/>
   </imgdir>
   <imgdir name="2049108">
@@ -7493,7 +7489,7 @@
   </imgdir>
   <imgdir name="2210030">
     <string name="name" value="Geppetto Transformation"/>
-    <string name="desc" value="You&apos;ve entered a fable and transformed into Geppetto. You’re feel a bit sluggish, but do your best to leave the dungeon with your party members."/>
+    <string name="desc" value="You&apos;ve entered a fable and transformed into Geppetto. You feel a bit sluggish, but do your best to leave the dungeon with your party members."/>
   </imgdir>
   <imgdir name="2210034">
     <string name="name" value="Alien Gray Transformation"/>
@@ -8017,15 +8013,15 @@
   </imgdir>
   <imgdir name="2280013">
     <string name="name" value="[Skill Book] Final Blow"/>
-    <string name="desc" value="Skill Book from which you can learn about the #cFinal Blow# skill.\nJob: 4th Lv Aran\nCondition: #cFinal Blow# not available"/>
+    <string name="desc" value="Skill Book from which you can learn about the #cFinal Blow# skill.\nJob: 4th Advancement Aran\nCondition: #cFinal Blow# not available"/>
   </imgdir>
   <imgdir name="2280014">
     <string name="name" value="[Skill Book] High Defense"/>
-    <string name="desc" value="Skill Book from which you can learn about the #cHigh Defense# skill.\nJob: 4th Lv Aran\nCondition: #cHigh Defense# not available"/>
+    <string name="desc" value="Skill Book from which you can learn about the #cHigh Defense# skill.\nJob: 4th Advancement Aran\nCondition: #cHigh Defense# not available"/>
   </imgdir>
   <imgdir name="2280015">
     <string name="name" value="[Skill Book] Combo Tempest"/>
-    <string name="desc" value="Skill Book from which you can learn about the #cCombo Tempest# skill.\nJob: 4th Lv Aran\nCondition: #cCombo Tempest# not available"/>
+    <string name="desc" value="Skill Book from which you can learn about the #cCombo Tempest# skill.\nJob: 4th Advancement Aran\nCondition: #cCombo Tempest# not available"/>
   </imgdir>
   <imgdir name="2280017">
     <string name="name" value="[Skill Book] Pig&apos;s Weakness"/>
@@ -8033,7 +8029,7 @@
   </imgdir>
   <imgdir name="2280016">
     <string name="name" value="[Skill Book] Combo Barrier"/>
-    <string name="desc" value="Skill Book from which you can learn about the #cCombo Barrier# skill.\nJob: 4th Lv Aran\nCondition: #cCombo Barrier# not available"/>
+    <string name="desc" value="Skill Book from which you can learn about the #cCombo Barrier# skill.\nJob: 4th Advancement Aran\nCondition: #cCombo Barrier# not available"/>
   </imgdir>
   <imgdir name="2280018">
     <string name="name" value="[Skill Book] Stump&apos;s Weakness"/>
@@ -8044,59 +8040,59 @@
     <string name="desc" value="Skill Book from which you can learn about the #cSlime&apos;s Weakness# skill.\nCondition: #cSlime&apos;s Weakness# not available"/>
   </imgdir>
   <imgdir name="2290126">
-    <string name="name" value="[Mastery Book] Overswing 20"/>
+    <string name="name" value="[Mastery Book] Overswing"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cOverswing# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290127">
-    <string name="name" value="[Mastery Book] Overswing 30"/>
+    <string name="name" value="[Mastery Book] Overswing"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cOverswing# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290128">
-    <string name="name" value="[Mastery Book] High Mastery 20"/>
+    <string name="name" value="[Mastery Book] High Mastery"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cHigh Mastery# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290129">
-    <string name="name" value="[Mastery Book] High Mastery 30"/>
+    <string name="name" value="[Mastery Book] High Mastery"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cHigh Mastery# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290130">
-    <string name="name" value="[Mastery Book] Freeze Standing 20"/>
+    <string name="name" value="[Mastery Book] Freeze Standing"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cFreeze Standing# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290131">
-    <string name="name" value="[Mastery Book] Freeze Standing 30"/>
+    <string name="name" value="[Mastery Book] Freeze Standing"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cFreeze Standing# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290132">
-    <string name="name" value="[Mastery Book] Final Blow 20"/>
+    <string name="name" value="[Mastery Book] Final Blow"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cFinal Blow# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290133">
-    <string name="name" value="[Mastery Book] Final Blow 30"/>
+    <string name="name" value="[Mastery Book] Final Blow"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cFinal Blow# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290134">
-    <string name="name" value="[Mastery Book] High Defense 20"/>
+    <string name="name" value="[Mastery Book] High Defense"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cHigh Defense# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290135">
-    <string name="name" value="[Mastery Book] High Defense 30"/>
+    <string name="name" value="[Mastery Book] High Defense"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cHigh Defense# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290136">
-    <string name="name" value="[Mastery Book] Combo Tempest 20"/>
+    <string name="name" value="[Mastery Book] Combo Tempest"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cCombo Tempest# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290137">
-    <string name="name" value="[Mastery Book] Combo Tempest 30"/>
+    <string name="name" value="[Mastery Book] Combo Tempest"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cCombo Tempest# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2290138">
-    <string name="name" value="[Mastery Book] Combo Barrier 20"/>
+    <string name="name" value="[Mastery Book] Combo Barrier"/>
     <string name="desc" value="With a 70% success rate, raises the Mastery Level of #cCombo Barrier# to 20.\nJob: Aran\nCondition: Min Skill Lv. 5"/>
   </imgdir>
   <imgdir name="2290139">
-    <string name="name" value="[Mastery Book] Combo Barrier 30"/>
+    <string name="name" value="[Mastery Book] Combo Barrier"/>
     <string name="desc" value="With a 50% success rate, raises the Mastery Level of #cCombo Barrier# to 30.\nJob: Aran\nCondition: Min Skill Lv. 15"/>
   </imgdir>
   <imgdir name="2380014">
@@ -8153,15 +8149,15 @@
   </imgdir>
   <imgdir name="2388052">
     <string name="name" value="Giant Centipede Card"/>
-    <string name="desc" value="A card that features Giant Centipede.\n#ctem drop rates are increased at Herb Town#"/>
+    <string name="desc" value="A card that features Giant Centipede.\n#cItem drop rates are increased at Herb Town#"/>
   </imgdir>
   <imgdir name="2388053">
     <string name="name" value="Blue Mushmom Card"/>
-    <string name="desc" value="A card that features Blue Mushmom.\n#c#tem drop rates are increased at Korean Folk Town#"/>
+    <string name="desc" value="A card that features Blue Mushmom.\n#cItem drop rates are increased at Korean Folk Town#"/>
   </imgdir>
   <imgdir name="2388054">
     <string name="name" value="Snack Bar Card"/>
-    <string name="desc" value="A card that features Snack Bar.\n#ctem drop rates are increased at Drake&apos;s area#"/>
+    <string name="desc" value="A card that features Snack Bar.\n#cItem drop rates are increased at Drake&apos;s area#"/>
   </imgdir>
   <imgdir name="2388067">
     <string name="name" value="Gray Yeti and King Pepe Card"/>
@@ -8177,7 +8173,7 @@
   </imgdir>
   <imgdir name="2388070">
     <string name="name" value="Prime Minister Mushroom Card"/>
-    <string name="desc" value="A card featuring the Prime Minister Mushroom.\n\cIncreases the item/meso drop rate when used inside the Mushroom Castle.#"/>
+    <string name="desc" value="A card featuring the Prime Minister Mushroom.\n#cIncreases the item/meso drop rate when used inside the Mushroom Castle.#"/>
   </imgdir>
   <imgdir name="2430013">
     <string name="name" value="Peng Peng Popsicle"/>
@@ -8205,7 +8201,7 @@
   </imgdir>
   <imgdir name="2040759">
     <string name="name" value="Scroll for Shoes for ATT"/>
-    <string name="desc" value="Improves attack on gloves.\nSuccess rate: 60%. Weapon Attack +2. The success rate of this scroll can be enhanced by Vega&apos;s Spell."/>
+    <string name="desc" value="Improves attack on shoes.\nSuccess rate: 60%. Weapon Attack +2. The success rate of this scroll can be enhanced by Vega&apos;s Spell."/>
   </imgdir>
   <imgdir name="2040760">
     <string name="name" value="Scroll for Shoes for ATT"/>
@@ -8556,7 +8552,7 @@
     <string name="desc" value="A mysterious and unripe Onyx Apple. When consumed, it grants the following: ATT +60, Magic ATT +70, DEF +10 for 1 minute."/>
   </imgdir>
   <imgdir name="2030020">
-    <string name="name" value="Return to New Leaf City Scroll"/>
+    <string name="name" value="Return Scroll to New Leaf City"/>
     <string name="desc" value="Use this scroll to venture back to New Leaf City whenever you want!"/>
   </imgdir>
   <imgdir name="2000000">
@@ -8657,7 +8653,7 @@
   </imgdir>
   <imgdir name="2290020">
     <string name="name" value="[Mastery Book] Heaven&apos;s Hammer"/>
-    <string name="desc" value="This increases the master level of #cHeaven&apos;s Hammer# up to 20 with 70% of chance.\r\nClass : Paldain\r\nCondition : Skill level above 5"/>
+    <string name="desc" value="This increases the master level of #cHeaven&apos;s Hammer# up to 20 with 70% of chance.\r\nClass : Paladin\r\nCondition : Skill level above 5"/>
   </imgdir>
   <imgdir name="2290021">
     <string name="name" value="[Mastery Book] Heaven&apos;s Hammer"/>
@@ -8960,7 +8956,7 @@
     <string name="desc" value="This increases the master level of #cSmokescreen# up to 30 with 50% of chance.\r\nClass : Shadower\r\nCondition : Skill level above 15"/>
   </imgdir>
   <imgdir name="2290096">
-    <string name="name" value="[Mastery Book] Maple Warrior 20"/>
+    <string name="name" value="[Mastery Book] Maple Warrior"/>
     <string name="desc" value="This increases the master level of #cMaple Warrior# up to 20 with 70% of chance.\r\nJob : All 4th Advancement Jobs\r\nCondition : Skill level above 5"/>
   </imgdir>
   <imgdir name="2290097">
@@ -9072,7 +9068,7 @@
     <string name="desc" value="With a 70% success rate, it raises the Master Level of #cBullseye# to 20.nJob : Corsair\r\nRequirement : At least Level 5 in this skill"/>
   </imgdir>
   <imgdir name="2290125">
-    <string name="name" value="[Mastery Book] Maple Warrior 30"/>
+    <string name="name" value="[Mastery Book] Maple Warrior"/>
     <string name="desc" value="This increases the master level of #cMaple Warrior# up to 30 with 50% of chance.\r\nJob : All 4th Advancement Jobs\r\nCondition : Skill level above 15"/>
   </imgdir>
   <imgdir name="2022303">

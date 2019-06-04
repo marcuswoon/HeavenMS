@@ -81,7 +81,7 @@ public class CommandsExecutor {
     }
     
     public void handle(MapleClient client, String message){
-            if (client.tryacquireClient()) {
+        if (client.tryacquireClient()) {
             try {
                 handleInternal(client, message);
             } finally {
@@ -93,8 +93,16 @@ public class CommandsExecutor {
     }
     
     private void handleInternal(MapleClient client, String message){
-        final String[] spitedMessage = message.toLowerCase().substring(1).split("[ ]");
-        final String commandName = spitedMessage[0];
+        final String splitRegex = "[ ]";
+        String[] splitedMessage = message.substring(1).split(splitRegex, 2);
+        if (splitedMessage.length < 2) {
+            splitedMessage = new String[]{splitedMessage[0], ""};
+        }
+        
+        client.getPlayer().setLastCommandMessage(splitedMessage[1]);    // thanks Tochi & Nulliphite for noticing string messages being marshalled lowercase
+        final String commandName = splitedMessage[0].toLowerCase();
+        final String[] lowercaseParams = splitedMessage[1].toLowerCase().split(splitRegex);
+        
         final RegisteredCommand command = registeredCommands.get(commandName);
         if (command == null){
             client.getPlayer().yellowMessage("Command '" + commandName + "' is not available. See @commands for a list of available commands.");
@@ -105,8 +113,8 @@ public class CommandsExecutor {
             return;
         }
         String[] params;
-        if (spitedMessage.length > 1) {
-             params = Arrays.copyOfRange(spitedMessage, 1, spitedMessage.length);
+        if (lowercaseParams.length > 0 && !lowercaseParams[0].isEmpty()) {
+            params = Arrays.copyOfRange(lowercaseParams, 0, lowercaseParams.length);
         } else {
             params = new String[]{};
         }
@@ -178,13 +186,14 @@ public class CommandsExecutor {
         addCommand("uptime", UptimeCommand.class);
         addCommand("gacha", GachaCommand.class);
         addCommand("dispose", DisposeCommand.class);
+        addCommand("changel", ChangeLanguageCommand.class);
         addCommand("equiplv",  EquipLvCommand.class);
         addCommand("showrates", ShowRatesCommand.class);
         addCommand("rates", RatesCommand.class);
         addCommand("online", OnlineCommand.class);
         addCommand("gm", GmCommand.class);
         addCommand("reportbug", ReportBugCommand.class);
-        //addCommand("points", "");
+        addCommand("points", ReadPointsCommand.class);
         addCommand("joinevent", JoinEventCommand.class);
         addCommand("leaveevent", LeaveEventCommand.class);
         addCommand("ranks", RanksCommand.class);
@@ -193,6 +202,10 @@ public class CommandsExecutor {
         addCommand("int", StatIntCommand.class);
         addCommand("luk", StatLukCommand.class);
         addCommand("enableauth", EnableAuthCommand.class);
+        addCommand("toggleexp", ToggleExpCommand.class);
+        addCommand("mylawn", MapOwnerClaimCommand.class);
+        addCommand("bosshp", BossHpCommand.class);
+        addCommand("mobhp", MobHpCommand.class);
         
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -201,8 +214,6 @@ public class CommandsExecutor {
     private void registerLv1Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         
-        addCommand("bosshp", 1, BossHpCommand.class);
-        addCommand("mobhp", 1, MobHpCommand.class);
         addCommand("whatdropsfrom", 1, WhatDropsFromCommand.class);
         addCommand("whodrops", 1, WhoDropsCommand.class);
         addCommand("buffme", 1, BuffMeCommand.class);
@@ -247,6 +258,8 @@ public class CommandsExecutor {
         addCommand("unjail", 2, UnJailCommand.class);
         addCommand("job", 2, JobCommand.class);
         addCommand("unbug", 2, UnBugCommand.class);
+        addCommand("id", 2, IdCommand.class);
+        addCommand("gachalist", GachaListCommand.class);
         
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -279,7 +292,7 @@ public class CommandsExecutor {
         addCommand("givenx", 3, GiveNxCommand.class);
         addCommand("givevp", 3, GiveVpCommand.class);
         addCommand("givems", 3, GiveMesosCommand.class);
-        addCommand("id", 3, IdCommand.class);
+        addCommand("giverp", 3, GiveRpCommand.class);
         addCommand("expeds", 3, ExpedsCommand.class);
         addCommand("kill", 3, KillCommand.class);
         addCommand("seed", 3, SeedCommand.class);
@@ -295,7 +308,6 @@ public class CommandsExecutor {
         addCommand("startmapevent", 3, StartMapEventCommand.class);
         addCommand("stopmapevent", 3, StopMapEventCommand.class);
         addCommand("online2", 3, OnlineTwoCommand.class);
-        addCommand("warpsnowball", 3, WarpSnowBallCommand.class);
         addCommand("ban", 3, BanCommand.class);
         addCommand("unban", 3, UnBanCommand.class);
         addCommand("healmap", 3, HealMapCommand.class);
@@ -327,8 +339,10 @@ public class CommandsExecutor {
         addCommand("exprate", 4, ExpRateCommand.class);
         addCommand("mesorate", 4, MesoRateCommand.class);
         addCommand("droprate", 4, DropRateCommand.class);
+        addCommand("bossdroprate", 4, BossDropRateCommand.class);
         addCommand("questrate", 4, QuestRateCommand.class);
         addCommand("travelrate", 4, TravelRateCommand.class);
+        addCommand("fishrate", 4, FishingRateCommand.class);
         addCommand("itemvac", 4, ItemVacCommand.class);
         addCommand("forcevac", 4, ForceVacCommand.class);
         addCommand("zakum", 4, ZakumCommand.class);
@@ -354,6 +368,8 @@ public class CommandsExecutor {
         addCommand("set", 5, SetCommand.class);
         addCommand("showpackets", 5, ShowPacketsCommand.class);
         addCommand("showmovelife", 5, ShowMoveLifeCommand.class);
+        addCommand("showsessions", 5, ShowSessionsCommand.class);
+        addCommand("iplist", 5, IpListCommand.class);
         
         commandsNameDesc.add(levelCommandsCursor);
     }

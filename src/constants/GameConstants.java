@@ -1,5 +1,6 @@
 package constants;
 
+import client.MapleDisease;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import server.quest.MapleQuest;
 public class GameConstants {
     public static String[] WORLD_NAMES = {"Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "Kradia", "Yellonde", "Demethos", "Galicia", "El Nido", "Zenith", "Arcenia", "Kastia", "Judis", "Plana", "Kalluna", "Stius", "Croa", "Medere"};
     public static final int[]  OWL_DATA = new int[]{1082002, 2070005, 2070006, 1022047, 1102041, 2044705, 2340000, 2040017, 1092030, 2040804};
+    public static final String[] stats = {"tuc", "reqLevel", "reqJob", "reqSTR", "reqDEX", "reqINT", "reqLUK", "reqPOP", "cash", "cursed", "success", "setItemID", "equipTradeBlock", "durability", "randOption", "randStat", "masterLevel", "reqSkillLevel", "elemDefault", "incRMAS", "incRMAF", "incRMAI", "incRMAL", "canLevel", "skill", "charmEXP"};
     public static final int[] CASH_DATA = new int[]{50200004, 50200069, 50200117, 50100008, 50000047};
     
     // Ronan's rates upgrade system
@@ -33,6 +35,9 @@ public class GameConstants {
     private final static NumberFormat nfFormatter = new DecimalFormat("#,###,###,###");
     private final static NumberFormat nfParser = NumberFormat.getInstance(ServerConstants.USE_UNITPRICE_WITH_COMMA ? Locale.FRANCE : Locale.UK);
     
+    public static final MapleDisease[] CPQ_DISEASES = {MapleDisease.SLOW, MapleDisease.SEDUCE, MapleDisease.STUN, MapleDisease.POISON,
+                                                       MapleDisease.SEAL, MapleDisease.DARKNESS, MapleDisease.WEAKEN, MapleDisease.CURSE};
+    
     public static int getPlayerBonusDropRate(int slot) {
         return(DROP_RATE_GAIN[slot]);
     }
@@ -45,9 +50,8 @@ public class GameConstants {
         return(EXP_RATE_GAIN[slot]);
     }
     
-    // used by the "goto" command
-    public static final HashMap<String, Integer> GOTO_MAPS = new HashMap<String, Integer>() {{
-        put("gmmap", 180000000);
+    // used by the "goto" command for players
+    public static final HashMap<String, Integer> GOTO_TOWNS = new HashMap<String, Integer>() {{
         put("southperry", 60000);
         put("amherst", 1000000);
         put("henesys", 100000000);
@@ -72,6 +76,25 @@ public class GameConstants {
         put("korean", 222000000);
         put("ellin", 300000000);
         put("nlc", 600000000);
+        put("showa", 801000000);
+        put("shrine", 800000000);
+        put("ariant", 260000000);
+        put("magatia", 261000000);
+        put("singapore", 540000000);
+        put("quay", 541000000);
+        put("kampung", 551000000);
+        put("amoria", 680000000);
+        put("temple", 270000100);
+        put("square", 103040000);
+        put("neo", 240070000);
+        put("mushking", 106020000);
+    }};
+    
+    // used by the "goto" command for only-GMs
+    public static final HashMap<String, Integer> GOTO_AREAS = new HashMap<String, Integer>() {{
+        putAll(GOTO_TOWNS);
+        
+        put("gmmap", 180000000);
         put("excavation", 990000000);
         put("mushmom", 100000005);
         put("griffey", 240020101);
@@ -80,25 +103,13 @@ public class GameConstants {
         put("balrog", 105090900);
         put("zakum", 211042300);
         put("papu", 220080001);
-        put("showa", 801000000);
         put("guild", 200000301);
-        put("shrine", 800000000);
         put("skelegon", 240040511);
         put("hpq", 100000200);
         put("pianus", 230040420);
         put("horntail", 240050400);
         put("pinkbean", 270050000);
-        put("ariant", 260000000);
-        put("magatia", 261000000);
-        put("singapore", 540000000);
-        put("quay", 541000000);
-        put("kampung", 551000000);
         put("keep", 610020006);
-        put("amoria", 680000000);
-        put("temple", 270000100);
-        put("square", 103040000);
-        put("neo", 240070000);
-        put("mushking", 106020000);
         put("dojo", 925020001);
         put("bosspq", 970030000);
         put("fm", 910000000);
@@ -582,8 +593,22 @@ public class GameConstants {
     	return mapid >= 926010010 & mapid <= 930010000;
     }
     
+    public static boolean isAriantColiseumLobby(int mapid) {
+        int mapbranch = mapid / 1000;
+    	return mapbranch == 980010 && mapid % 10 == 0;
+    }
+    
+    public static boolean isAriantColiseumArena(int mapid) {
+        int mapbranch = mapid / 1000;
+    	return mapbranch == 980010 && mapid % 10 == 1;
+    }
+    
     public static boolean isPqSkillMap(int mapid) {
     	return isDojo(mapid) || isPyramid(mapid);
+    }
+    
+    public static boolean isFishingArea(int mapid) {
+    	return mapid == 120010000 || mapid == 251000100 || mapid == 541010110;
     }
     
     public static boolean isFinisherSkill(int skillId) {

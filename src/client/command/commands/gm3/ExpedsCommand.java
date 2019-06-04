@@ -30,6 +30,9 @@ import net.server.Server;
 import net.server.channel.Channel;
 import server.expeditions.MapleExpedition;
 
+import java.util.List;
+import java.util.Map.Entry;
+
 public class ExpedsCommand extends Command {
     {
         setDescription("");
@@ -39,13 +42,14 @@ public class ExpedsCommand extends Command {
     public void execute(MapleClient c, String[] params) {
         MapleCharacter player = c.getPlayer();
         for (Channel ch : Server.getInstance().getChannelsFromWorld(c.getWorld())) {
-            if (ch.getExpeditions().isEmpty()) {
+            List<MapleExpedition> expeds = ch.getExpeditions();
+            if (expeds.isEmpty()) {
                 player.yellowMessage("No Expeditions in Channel " + ch.getId());
                 continue;
             }
             player.yellowMessage("Expeditions in Channel " + ch.getId());
             int id = 0;
-            for (MapleExpedition exped : ch.getExpeditions()) {
+            for (MapleExpedition exped : expeds) {
                 id++;
                 player.yellowMessage("> Expedition " + id);
                 player.yellowMessage(">> Type: " + exped.getType().toString());
@@ -53,11 +57,11 @@ public class ExpedsCommand extends Command {
                 player.yellowMessage(">> Size: " + exped.getMembers().size());
                 player.yellowMessage(">> Leader: " + exped.getLeader().getName());
                 int memId = 2;
-                for (MapleCharacter member : exped.getMembers()) {
-                    if (exped.isLeader(member)) {
+                for (Entry<Integer, String> e : exped.getMembers().entrySet()) {
+                    if (exped.isLeader(e.getKey())) {
                         continue;
                     }
-                    player.yellowMessage(">>> Member " + memId + ": " + member.getName());
+                    player.yellowMessage(">>> Member " + memId + ": " + e.getValue());
                     memId++;
                 }
             }

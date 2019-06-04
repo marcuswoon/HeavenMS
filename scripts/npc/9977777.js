@@ -46,8 +46,11 @@ function writeFeatureTab_PQs() {
         addFeature("GuildPQ & queue with multi-lobby system available.");
         addFeature("Brand-new PQs: BossRushPQ, CafePQ.");
         addFeature("Mu Lung Dojo.");
+        addFeature("Monster Carnival 1 & 2 - thanks Dragohe4rt & Jayd!");
+        addFeature("AriantPQ - thanks Dragohe4rt & Jayd!");
         addFeature("Capt. Latanica with party fighting the boss.");
         addFeature("Filled up missing obligatory event script methods.");
+        addFeature("Secured uniquety of active lobby-name instances.");
 }
 
 function writeFeatureTab_Skills() {
@@ -57,6 +60,7 @@ function writeFeatureTab_Skills() {
         addFeature("Maker skill features properly developed.");
         addFeature("Chair Mastery - map chair boosts HP/MP rec.");
         addFeature("Mu Lung Dojo skills functional.");
+        addFeature("Monster Magnet skill no longer crashes players.");
 }
 
 function writeFeatureTab_Quests() {
@@ -69,22 +73,29 @@ function writeFeatureTab_Quests() {
         addFeature("Reviewed several 4th job skill questlines.");
         addFeature("Rewarding system now looks up for item stacking.");
         addFeature("3rd job quiz with all 40-question pool available.");
+        addFeature("Item raising functional.");
 }
 
 function writeFeatureTab_PlayerSocialNetwork() {
+        addFeature("Party Search fully functional.");
         addFeature("Guild and Alliance system fully functional.");
+        addFeature("Guild contract system held in Guild Headquarters.");
         addFeature("Party for novices-only.");
         addFeature("P. members' HPBar accounts HP gain on equips.");
         addFeature("Thoroughly reviewed P. Shops and H. Merchants.");
         addFeature("Transactions on Merchs instantly announced to owner.");
+        addFeature("Proper meso space check on player transactions.");
         addFeature("Game minirooms with functional pw system.");
         addFeature("Proper item pickup cooldown on non-owned items.");
         addFeature("Improved ranking system, with daily movement.");
         addFeature("Protected and improved face expression system.");
         addFeature("Automated support for Player NPCs and Hall of Fame.");
         addFeature("Engagement & Wedding system with ring effects.");
+        addFeature("Wedding Wishlists - thanks Dragohe4rt!");
         addFeature("Equipments displays to everyone it's level & EXP info.");
         addFeature("Further improved the existent minigame mechanics.");
+        addFeature("Trade complete using handshake synchronization.");
+        addFeature("GMS-like trade results displaying after transactions.");
 }
 
 function writeFeatureTab_CashItems() {
@@ -104,6 +115,7 @@ function writeFeatureTab_CashItems() {
         addFeature("Reviewed an pet position issue within CASH inventory.");
         addFeature("Reviewed fashion-related contents, almost GMS-like.");
         addFeature("Plastic surgeons/stylists no longer stuck characters.");
+        addFeature("Reworked gachapon loots, website-lists lookalike.");
         addFeature("Scroll for Spikes on Shoes.");
         addFeature("Scroll for Cold Protection.");
         addFeature("Vega's spell.");
@@ -121,10 +133,13 @@ function writeFeatureTab_MonstersMapsReactors() {
         addFeature("Added meso drop data for many missing mobs.");
         addFeature("Monsterbook displays updated drop data info.");
         addFeature("Every skill/mastery book is now obtainable.");
+        addFeature("Enhanced aggro system, with real-time DPS detection.");
+        addFeature("Puppets keep targeted mobs nearby on new aggro.");
         addFeature("Mobs now can drop more than one of the same equip.");
         addFeature("Mobs only drop items collectable by the player/party.");
         addFeature("Mobs shouldn't fall from foothold too often now.");
         addFeature("Properly applying MP cost on non-skill mob moves.");
+        addFeature("Limited underling mob spawns.");
         addFeature("Implemented mob banish by touch & skill move.");
         addFeature("Redesigned HT mechanics: assemble & dmg taken.");
         addFeature("Implemented Zombify disease status.");
@@ -146,6 +161,7 @@ function writeFeatureTab_MonstersMapsReactors() {
         addFeature("Added world maps for M. Castle, W. Tour & Ellin areas.");
         addFeature("Added W. Tour & Masteria continents in the world map.");
         addFeature("Reviewed several issues with W. Map tooltips & links.");
+        addFeature("Continent separated global drops.");
         addFeature("Giant Cake boss drops s. bags and Maple items.");
 }
 
@@ -167,6 +183,8 @@ function writeFeatureTab_Playerpotentials() {
         addFeature("Reviewed keybinding system.");
         addFeature("Character slots per world/server-wide.");
         addFeature("Optional cash shop inventory separated by classes.");
+        addFeature("Players manage 'same-typed' invites exclusively.");
+        addFeature("Player buffs with conditional active effects.");
 }
 
 function writeFeatureTab_Serverpotentials() {
@@ -179,9 +197,11 @@ function writeFeatureTab_Serverpotentials() {
         addFeature("Enhanced AP auto-assigner: focus on eqp demands.");
         addFeature("Enhanced inventory check: free slots smartly fetched.");
         addFeature("Enhanced petloot handler: no brute-force inv. checks.");
+        addFeature("Matching system: everyone's decision to trigger action.");
         addFeature("Players-appointed bestsellers for Owl and Cash Shop.");
         addFeature("Tweaked pet/mount hunger to a balanced growth rate.");
         addFeature("Consistent experience and meso gain system.");
+        addFeature("Fredrick Store Bank warn/delete unclaimed items.");
         addFeature("NPC crafters won't take items freely anymore.");
         addFeature("Duey: pkg rcvd popup and many delivery mechanics.");
         addFeature("Pet pickup gives preference to player attacks.");
@@ -192,6 +212,9 @@ function writeFeatureTab_Serverpotentials() {
         addFeature("M. book announcer displays info based on demand.");
         addFeature("Custom jail system.");
         addFeature("Custom buyback system, uses mesos / NX, via MTS.");
+        addFeature("Custom fishing system having 'seasonal' catch times.");
+        addFeature("Actual fishing handling w/ F. Net - thanks Dragohe4rt!");
+        addFeature("Custom map leasing system.");
         addFeature("Delete Character.");
         addFeature("Smooth view-all-char, now showing all account chars.");
         addFeature("Centralized servertime, boosting handler performance.");
@@ -204,6 +227,7 @@ function writeFeatureTab_Serverpotentials() {
         addFeature("SP cap past tier-level, recovered after job upgrade.");
         addFeature("Bypassable PIN/PIC system for authenticated users.");
         addFeature("Automatic account registration - thanks shavit!");
+        addFeature("Any NPC scriptable - thanks GabrielSin!");
 }
 
 function writeFeatureTab_Commands() {
@@ -250,10 +274,12 @@ function writeFeatureTab_Project() {
         addFeature("Improved login phase, using cache over DB queries.");
         addFeature("Protected many flaws with login management system.");
         addFeature("Developed a robust anti-exploit login coordinator.");
+        addFeature("Revised uniqueness aspect of logged in accounts.");
         addFeature("Usage of HikariCP to improve DB connection calls.");
         addFeature("Usage of Java Threadpool to improve runnable calls.");
         addFeature("Developed many survey tools for content profiling.");
         addFeature("Removed dangling item name throughout game files.");
+        addFeature("Remodeled item scripts, properly using NPC dialogs.");
         addFeature("ThreadTracker: runtime tool for deadlock detection.");
         addFeature("Channel, World and Server-wide timer management.");
         addFeature("Thoroughly reviewed encapsulation for player stats.");

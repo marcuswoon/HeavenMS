@@ -231,6 +231,7 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.ADMIN_COMMAND, new AdminCommandHandler());
             registerHandler(RecvOpcode.ADMIN_LOG, new AdminLogHandler());
             registerHandler(RecvOpcode.ALLIANCE_OPERATION, new AllianceOperationHandler());
+            registerHandler(RecvOpcode.DENY_ALLIANCE_REQUEST, new DenyAllianceRequestHandler());
             registerHandler(RecvOpcode.USE_SOLOMON_ITEM, new UseSolomonHandler());
             registerHandler(RecvOpcode.USE_GACHA_EXP, new UseGachaExpHandler());
             registerHandler(RecvOpcode.NEW_YEAR_CARD_REQUEST, new NewYearCardHandler());
@@ -240,13 +241,13 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.ACCEPT_FAMILY, new AcceptFamilyHandler());
             registerHandler(RecvOpcode.DUEY_ACTION, new DueyHandler());
             registerHandler(RecvOpcode.USE_DEATHITEM, new UseDeathItemHandler());
-            //registerHandler(RecvOpcode.PLAYER_UPDATE, new PlayerUpdateHandler()); unused
             registerHandler(RecvOpcode.PLAYER_MAP_TRANSFER, new PlayerMapTransitionHandler());
             registerHandler(RecvOpcode.USE_MAPLELIFE, new UseMapleLifeHandler());
             registerHandler(RecvOpcode.USE_CATCH_ITEM, new UseCatchItemHandler());
             registerHandler(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY, new MobDamageMobFriendlyHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_REGISTER, new PartySearchRegisterHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_START, new PartySearchStartHandler());
+            registerHandler(RecvOpcode.PARTY_SEARCH_UPDATE, new PartySearchUpdateHandler());
             registerHandler(RecvOpcode.ITEM_SORT2, new InventorySortHandler());
             registerHandler(RecvOpcode.LEFT_KNOCKBACK, new LeftKnockbackHandler());
             registerHandler(RecvOpcode.SNOWBALL, new SnowballHandler());
@@ -262,7 +263,8 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.WATER_OF_LIFE, new UseWaterOfLifeHandler());
             registerHandler(RecvOpcode.ADMIN_CHAT, new AdminChatHandler());
             registerHandler(RecvOpcode.MOVE_DRAGON, new MoveDragonHandler());
-            registerHandler(RecvOpcode.USE_ITEMUI, new UseItemCanvasHandler());
+            registerHandler(RecvOpcode.OPEN_ITEMUI, new RaiseUIStateHandler());
+            registerHandler(RecvOpcode.USE_ITEMUI, new RaiseIncExpHandler());
         }
     }
 }

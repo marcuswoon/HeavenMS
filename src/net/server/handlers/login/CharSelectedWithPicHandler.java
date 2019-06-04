@@ -1,7 +1,6 @@
 package net.server.handlers.login;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import net.AbstractMaplePacketHandler;
@@ -52,20 +51,15 @@ public class CharSelectedWithPicHandler extends AbstractMaplePacketHandler {
         c.updateHWID(hwid);
         
         IoSession session = c.getSession();
-        AntiMulticlientResult res = MapleSessionCoordinator.getInstance().attemptGameSession(session, c.getAccID(), hwid);
-        if (res != AntiMulticlientResult.SUCCESS) {
-            c.announce(MaplePacketCreator.getAfterLoginError(parseAntiMulticlientError(res)));
-            return;
-        }
         
         if (c.hasBannedMac() || c.hasBannedHWID()) {
-            c.getSession().close(true);
+            MapleSessionCoordinator.getInstance().closeSession(c.getSession(), true);
             return;
         }
         
         Server server = Server.getInstance();
         if(!server.haveCharacterEntry(c.getAccID(), charId)) {
-            c.getSession().close(true);
+            MapleSessionCoordinator.getInstance().closeSession(c.getSession(), true);
             return;
         }
         
@@ -83,9 +77,15 @@ public class CharSelectedWithPicHandler extends AbstractMaplePacketHandler {
                 return;
             }
             
+            AntiMulticlientResult res = MapleSessionCoordinator.getInstance().attemptGameSession(session, c.getAccID(), hwid);
+            if (res != AntiMulticlientResult.SUCCESS) {
+                c.announce(MaplePacketCreator.getAfterLoginError(parseAntiMulticlientError(res)));
+                return;
+            }
+            
             server.unregisterLoginState(c);
             c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-            server.setCharacteridInTransition((InetSocketAddress) c.getSession().getRemoteAddress(), charId);
+            server.setCharacteridInTransition(session, charId);
             
             try {
                 c.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));

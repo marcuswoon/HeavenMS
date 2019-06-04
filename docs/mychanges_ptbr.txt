@@ -7,8 +7,8 @@
 	Abdula -> 9209000 *
 
 CUSTOM NPC SHOPS (db_shopupdate.sql):
-	Asia -> 2082014 *
-	T-1337 -> 9201101 *
+	Asia -> 2082014
+	T-1337 -> 9201101
 
 	* : those won't get disabled when USE_ENABLE_CUSTOM_NPC_SCRIPTS = false
 
@@ -1014,7 +1014,7 @@ Modificado sistema de EXP de mounts de forma a favorecer usar Revitalizer quando
 Retirado aspecto aleatório de ganho de closeness em pets ao usar o Pet Food, adicionado proteção a acesso concorrente.
 Corrigido script da Arwen não retirando itens ao gerar certos itens.
 Corrigido script de viagem para Florina levando jogadores a Lith Harbor mesmo quando entrando por outras regiões.
-Corrigido Stance, Berserk, Ninja Storm, Concentrate, Mage skills and other 4th job skills questlines.
+Corrigido Stance, Berserk, Ninja Storm, Concentrate, Mage skills e outras questlines de skills de 4th job.
 Novo release: Light.
 
 05 - 06 Junho 2018,
@@ -1574,3 +1574,337 @@ Protegido concorrentemente sistema de comandos, assim evitando processamento em 
 16 Janeiro 2019,
 Revisado login handler, trazendo métodos de desconexão para antes de checar LoginState, e não permitindo reatribuição de objeto-cliente para jogador já logado em canal.
 Revisado disconnect no login handler, agora devidamente finalizando sessões recém-criadas que falham em conectar jogador ao mundo.
+Revisado skill Monster Magnet, agora devidamente mostrando efeitos de skill.
+Mais uma tentativa de proteção contra acesso concorrente no login handler, buscando evitar múltiplas requisições concorrente por um accountId durante processo e múltiplas requisições de mesmo objeto de cliente.
+Revisado objeto das expedições, não mais permitindo armazenar objetos de jogadores (que já podem ter sido desativados).
+Corrigido expedições enviando pacotes para jogadores que estão fora de jogo.
+Normalizado mensagens de 1o job de NPCs explorers, com afirmação de mínimo de stats antes de checar requerimentos.
+
+18 Janeiro 2019,
+Corrigido dispose de interação com NPCs não devolvendo controle de certas ações ao jogador, mais notável quando a interação ocorreu automaticamente (jogador caminhou pra área de atuação).
+Removido pigs de Maple Island, já que o quiz de 3rd job sugere não há os mesmos lá. Cynical Orange Mushrooms passam a ocupar posições dos mesmos.
+Editado "launch.bat" para somente usar Java7, assim permitindo usuários a não terem que especificar preferência de uso de Java7 nas variáveis de ambiente PATH.
+
+20 Janeiro 2019,
+Corrigido necessidade de repetir aprovação dos mestres para realizar expedições de Zakum.
+Revisado comando goto. Jogadores tem acesso somente a mapas de cidade, GMs tem acesso a areas também.
+Implementado EXP rate específico para novatos de nível menor que 11.
+Revisado petid sendo setado fora de área de atuação (até então não compete setar isso após criado objeto de Item).
+
+21 - 24 Janeiro 2019,
+Corrigido sistema de guilds não atualizando corretamente tooltips de informação de guild de jogadores no mapa, para ampla quantidade de eventos com guilds (adicionar player na guild, trocar emblema, remover player, etc).
+Corrigido sistema de eventos permitindo entrada duplicada de eventos com mesmo nome nos registros do gerenciador de eventos, potencialmente levando a nulos em EIMs.
+Corrigido skill Hyper Body cancelando efeito do buff anterior ao reutilizar a skill, levando valores suficientemente grandes de HP corrente do jogador ao MaxHP base (MaxHP antes de utilizar a skill).
+Refatorado uso de evtLock para métodos que gerenciam expiração de quests, possívelmente resolvendo caso de deadlock no método de desistência de quests expiráveis.
+Revisado MoveLifeHandler, não mais propagando pacotes de movimentação de mobs vindas de jogadores que não são controladores.
+Refatorado completamente o sistema de aggro de mobs. Agora, métodos que atuam na atualização de aggros de mobs usam funções comuns.
+
+25 - 26 Janeiro 2019,
+Corrigido problema de acesso a ponteiro nulo ao realizar dispose no sistema de mapas das instâncias de eventos. Referência ao gerenciador de eventos já era nulo ao atingir tal método.
+Implementado retorno de estado de aggro para "sem aggro" se não houveram atividades de aggro num mob por algum tempo.
+Implementado checagem de aniversário ao adicionar itens de cash às lojas de player.
+Corrigido Hired Merchants não fechando devidamente ao abrir loja com itens de cash.
+Corrigido tooltip de Hired Merchant não atualizando para "indisponível" quando a loja está em manutenção.
+Corrigido tooltip de Player Shops não fechando corretamente se ainda havia visitantes na loja.
+Mais alguns ajustes no novo sistema de aggros. Nesta implementação aparentemente somente controladores processam ataques do tipo "areaWarning" de mobs.
+Corrigido função forceChangeMap não levando devidamente jogadores para o mapa dado como parâmetro, quando tal mapa é de instância de evento.
+Revisado comando de summon de jogadores, agora utilizando função padrão forceChangeMap, que lida com registro de jogadores em instâncias e coloca jogador no mapa alvo.
+Adicionado, no comando de summon de jogadores, habilidade de colocar jogadores em outros canais dentro do mapa de evento.
+
+27 - 29 Janeiro 2019,
+Corrigido custom AP autoassigner não utilizando devidamente os caps definidos no escopo do handler.
+Revisado custom AP autoassigner. Classes que usam DEX como atributo secundário para STR foram rebalanceados, de forma que o aumento no uso do atributo secundário permita melhores condições de ataque no jogo.
+Adicionado checagem de mesos em transações entre jogadores, lojas de jogador, ao receber itens de Duey e Fredrick.
+Adicionado checagem em quantidade de itens nas lojas e mercantes de jogadores, assim evitando bugs quando há mais itens a serem vendidos do que o esperado.
+Corrigido um exploit com mercantes, envolvendo chamada à DB antes de retirar item (que está sendo inserido na loja) do inventário do jogador.
+
+30 Janeiro 2019,
+Corrigido chamadas irregulares a "qm/cm" em scripts.
+
+31 Janeiro 2019,
+Com a ajuda de Irenex, adicionado referência a pet flags no criador de pacotes.
+Adicionado funcionalidade de quest que permite pets a andarem na velocidade do jogador.
+Corrigido quest repetível de Dragon Stone não apropriadamente recompensando o item ao jogador.
+Corrigido método de checagem de slots em MapleCharacter, agora utilizando o método padrão implementado especificamente para checagem de slots.
+
+01 Fevereiro 2019,
+Corrigido vulnerabilidade na ação de jogadores ao retornar para a cidade após reviver. Servidor poderia receber packet de dano e processá-lo legitimamente com o HP atualizado do jogador antes de enviá-lo de volta para cidade.
+
+04 - 05 Fevereiro 2019,
+Corrigido NPCs de portão em Mushking Empire permitindo jogadores acesso a área de bosses sem requisitos mínimos.
+Incrementado diálogos de permissão para realizar expedições contra Zakum.
+Modificado gerenciador de item scripts, agora referenciando conversação de NPCs (como previsto pelo WZ).
+Implementado limitação de mob summons, como previsto no WZ.
+Revisado fechamento de sessões no código-fonte não utilizando o coordenador de sessões para isto.
+Revisado sistema de login, agora automaticamente desconectando contas retidas no jogo quando DB determina que uma conta está disponível para login.
+Revisado Teleport Rocks, agora devidamente checando se é possível chegar ao mapa alvo (ou se há bloqueio de uso do item para esse mapa), além de certas checagens contra exploits com esse item.
+Corrigido agendamento de removeAfter de mobs atuando quando o mesmo já foi liberado.
+
+07 - 08 Fevereiro 2019,
+Corrigido ocorrências de NPE ao tentar registrar-se em instância de evento, quando existe uma outra instância que leva o mesmo nome em andamento.
+Tentativa de correção em todos os scripts de eventos, após ter atualizado o sistema de eventos para não mais ficar gerando instâncias livremente (agora, todas as instâncias orientadas-a-solo têm limite de acesso simultâneo entre jogadores).
+Corrigido lojas de jogadores e mercantes não aceitando itens em certos casos onde já se foi usado Scissors of Karma.
+Revisado novamente diversos scripts de evento, atentando às chamadas de função "setup" das mesmas.
+
+09 Fevereiro 2019,
+Tentativa de correção em sessões com exceptionCaught, já que aparentemente a sessão nem sempre é fechada pelo MINA automaticamente.
+Corrigido lista de guilds em alliances não sendo atualizado corretamente ao criar-se uma nova alliance. Era possível ver guilds de alianças passadas antes de ocorrer alguma atualização de packet em jogo que resolva isso.
+Implementado comando "toggleexp", que permite jogadores a escolher ganhar nível ou não se os mesmos não estivem em instância de evento.
+Nova ferramenta: MapleCashVegaChecker. Ferramenta busca por itens que supostamente deveriam permitir uso do Vega Scroll (segundo descrição) porém não o permitem.
+Revisado nomes de skill e mastery books, que mantinham números no nome da skill (agora padronizado com os outros livros).
+
+10 Fevereiro 2019,
+Editado requerimentos de level de medalhas level 200 para 180, assim evitando o problema onde nível das medalhas não apareçe na visão do cliente devido ao level cap.
+Corrigido puppets não tomando prioridade na nova mecânica de aggro.
+Incrementado mensagem custom de venda de produtos pelo mercante.
+
+13 - 14 Fevereiro 2019,
+Corrigido limites na função isWeapon, que não contabilizaria certos itens corretamente.
+Resolvido comportamento de puppets usando o novo sistema de aggro.
+
+18 Fevereiro 2019,
+Corrigido um caso onde jogador em party poderia perder prioridade sobre loots recentes no chão ao mudar de mapas.
+Ajustado contabilização de buffs no ganho de exp, agora bonus de party também contabiliza ganho pelos buffs.
+Corrigido mercantes não checando estoque de itens apropriadamente ao pegar de volta itens colocados nos mercantes.
+Corrigido referências a lojas de jogadores não sendo devidamente liberadas para visitantes quando dono fecha a loja, levando a problemas de update visuais no mapa ao realizar certas ações.
+Ajustado mercantes para automaticamente fechar a loja assim que dono tenta sair da loja deixando a mesma vazia.
+Adicionado opcodes de resultado de trades entre jogadores.
+Incrementado resultados de trades, agora utilizando um conjunto de respostas mais parecido com o do GMS.
+
+19 - 20 Fevereiro 2019,
+Implementado checagem de distância a portais no mapa em criação de loja/mercante de jogador.
+Implementado checagem de IP localhost ao tentar logar em server com IP de produção.
+Ajustado quests de door bosses, agora entregando emblemas a jogadores no início e retirando os mesmos ao terminar a quest. O item emblema é um dos requerimentos para acessar o boss da área.
+Corrigido problema no sistema de login utilizando flag de detecção de múltiplas sessões abertas não tratando hashcodes negativos de IP.
+Adicionado comandos de desenvolvedor que permitem visualizar situações de conexão de jogadores (avaliação de stack de IP abertos no servidor e sessões logadas).
+
+21 Fevereiro 2019,
+Corrigido chalkboard não aparecendo corretamente para o usuário do item ao trocar mapas.
+Revisado chalkboard agora removendo unidade do inventário ao usar.
+Implementado checagem por chalkboard em salas do FM.
+Adicionado opcodes de mensagens genéricas de guild.
+
+22 Fevereiro 2019,
+Corrigido líder de aliança de guilds não sendo permitido convidar guilds logo após aumentar a capacidade da aliança.
+Corrigido impossibilidade de abrir novos mercantes logo assim que último mercante expirou.
+Implementado visualização do "tempo de sobra" ao reentrar no mercante (somente sendo dono da loja).
+Ajustado resultado de skillbooks não aparecendo para todos jogadores no mapa.
+Corrigido alguns comandos utilizando letras minúsculas em conteúdos de mensagens.
+
+23 Fevereiro 2019,
+Adicionado funcionalidade de colocar tipo de cash a adicionar no comando GiveNx.
+Implementado taxas de manutenção de mesos/itens no Fredrick. Após 100 dias, itens guardados são removidos conforme descrição de utilização das lojas.
+Incrementado comportamento do NPC Fredrick. Como na descrição do serviço (ao abrir mercantes), itens guardados agora podem ser removidos após 100 dias, e há a perda de 1% da valia do montante vendido a cada dia que se passa sem os itens serem recuperados pelo jogador.
+
+25 - 28 Fevereiro 2019,
+Adicionado número de locks disponíveis para seção de login e controle de item factory.
+Incrementado quantidade de locks de atividades disponíveis por canal, visando uma carga relevante de pessoas online.
+Corrigido abertura de inventário (comportamento do trade) sendo feita mesmo em cenários onde não é possível nem convidar o outro jogador.
+Implementado sistema de gerenciamento de convites para as diversas modalidades no jogo (party, guild, messenger, etc).
+Ajustado mercantes, agora salvando dados do jogador dono da loja a todo movimento de itens na loja não-aberta (quando o mesmo ainda está gerenciando itens na loja).
+Implementado funcionalidade de arrendamento de mapas. Jogadores podem se tornar donos de mapa e evitar outros de farmar nos mesmos.
+Ajustado ordenador de inventários, agora deixando itens projéteis (flechas, shurikens e balas) em ordem confortável para uso do jogador.
+
+01 Março 2019,
+Adicionado efeito visual em ganho de Aran skills.
+Implementado mecânica de pescaria no código-fonte.
+
+09 Março 2019,
+Corrigido membros de party não recebendo bonus devidamente após membros sairem do mapa/party em alguns casos.
+Revisado sistema de experiência em party. Ganhos de bonus agora levam em conta valores-base que membros de party ganham ao derrotar um mob para definir o ganho geral da equipe. Contabilização de ganhos remodelado, buscando por um modo de distribuição mais coerente.
+
+10 Março 2019,
+Ajustado ganho de APs ao mudar de classe, como esperado para o 2o avanço em diante.
+Corrigido itemids impróprios presentes no sistema de fishing.
+Corrigido itens one-of-a-kind sendo perdidos em transações entre jogadores.
+Ajustado resultado de falha de itens one-of-a-kind em transações também aparecendo pro outro jogador (somente o jogador que gerou o problema tem esse popup mostrado).
+Ajustado ganho de APs em Cygnus, agora não mais faltando AP's de acordo com a métrica definida no AP Reset.
+
+11 Março 2019,
+Implementado sistema de matching na fase de criação de guilds.
+Corrigido mudança de classes não tendo update de informação em party.
+Implementado matching (na forma de tratado GMS-like) entre líder e jogadores sem party presentes no mapa durante a fase de criação de guilds.
+
+12 - 13 Março 2019,
+Iniciado operação de introdução da wishlist de casamento e MCPQ no fonte, a partir do pull request feito pelo Dragohe4rt.
+Implementado estrutura back-end para comportar e manter (em DB) o wishlist de casamento.
+Ajustado mecânicas de wishlist iniciadas nos scripts do evento de casamento.
+
+14 Março 2019,
+Adicionado checagem por itens untradeable no handler de wishlist ao enviar itens.
+Adicionado drops da CPQ na DB.
+Corrigido diversas diseases da CPQ não funcionando corretamente ao pegar do chão item que aleatoriza disease no time/pessoa oponente.
+Modificado geração de mapas da CPQ, agora sempre carregando um novo mapa da WZ ao invés de sempre buscar e resetar o mapa carregado na cache.
+
+15 Março 2019,
+Adicionado SFX nos portais da CPQ.
+Ajustado limites na CPQ para atuar GMS-like, além de ajustado a server flag USE_ENABLE_SOLO_EXPEDITIONS para permitir entradas solo nos mapas deste evento.
+Corrigido sistema de login não avaliando corretamente o campo HOST em "configuration.ini" quando o mesmo é preenchido como "localhost" ao invés de um valor de IP loopback.
+
+16 - 18 Março 2019,
+Revisado descrições em certos livros de upgrade de skill de Aran.
+Adicionado server flag para remover disponibilidade da CPQ. Feito devido às mensagens nos scripts estarem atualmente em português.
+Corrigido update de packet duplo ao inicializar uma instância de CPQ, fazendo funcionais aparecerem em dobro.
+Corrigido instância de CPQ não terminando após retirada de um membro da party ou dispensa da mesma.
+Corrigido instância de CPQ não levando jogadores ao mapa de batalha devidamente após implementado sistema de geração de mapas.
+Corrigido verificação por instâncias em andamento de CPQ não sendo realizado corretamente.
+Refatorado busca por nomes de jobs na CPQ e gerenciador de NPC scripts (estava em maiúsculo).
+
+20 Março 2019,
+Revisado sistema de login, agora evitando conexões indiretas feitas ao servidor. Servidor local somente aceita conexões locais, servidor remoto somente aceita conexões remotas.
+Revisado busca por cliente ao finalizar sessão. Se não há clientes registrados sob uma determinada sessão IP, o sistema vai tentar buscar a mesma dentro dos registros de transição (removendo assim possibilidade de perder detecção de accounts na fase de transição).
+
+22 Março 2019,
+Ajustado PiratePQ stage 2, agora fazendo respawn de mobs na área ao invés de requisitar líder para chamar uma nova onda.
+Refatorado busca por IP remoto de uma sessão, agora utilizando um registro na classe da sessão para manter o IP usado pela conexão.
+Ajustado quest do Prime Minister, permitindo entrada de grupos de até 3 jogadores. Também alterado modo como o chefe é colocado em campo: algum dos jogadores precisa ter a quest a fazer para começar (na primeira fase).
+Corrigido vários itemids inexistentes nos drops da MCPQ.
+Corrigido comando "forcevac" guardando no inventário mas não usando (como deveria ser) os itens "usáveis ao pegar".
+
+26 Março 2019,
+Revisado novamente login, para o caso onde accId = 0 estava sendo atribuído e então conta estava sendo rechecada, assim gerando conflito ao tentar logar.
+Adicionado update de estado de login no módulo de disconnect, para também atualizar estado da conta quando a mesma não se encontra já logada ou em transição.
+Corrigido NPC da CPQ2, saída abrupta, não retornando jogadores devidamente para o saguão de espera.
+Corrigido bug na CPQ em tempo estendido não mostrando devidamente o efeito visual de fim de partida.
+
+27 Março 2019,
+Corrigido possibilidade de bloqueio de volta do jogador ao jogo, ao utilizar o sistema de MTS/Cash Shop. Problema ocorria devido a mudanças concorrentes de login states ao fazer a transição de volta ao jogo.
+Corrigido instância de eventos finalizada ainda utilizando os scripts, levando a possíveis inconsistências em jogo. Premissa é: não deveriam existir mais ações de script após se finalizar uma instância.
+Ajustado Dimensional Door, agora permitindo jogadores a entrar no saguão de espera das MCPQs.
+Corrigido combo resetando orbs ao reusar a skill ainda ativa.
+Adicionado ganho de skill book Maple Warrior ao iniciar 4th job.
+
+28 Março 2019,
+Corrigido problema com jogador não conseguindo coletar próprio drop se o mesmo estiver em party e for enviado para outro mapa e o mesmo retornar em tempo de exclusividade de coleta.
+Corrigido problema com jogador não conseguindo coletar drops de party após o mesmo voltar do MTS/Cash Shop ainda em tempo de exclusividade de coleta.
+Corrigido problema com jogador não conseguindo coletar drops com tempo de exclusividade de coleta já expirado.
+Revisado visão de ganho de EXP. Jogadores que participaram mais no dano de mob percebem o ganho de EXP em branco, caso contrário em amarelo.
+Corrigido possibilidade de congelamento de tela ao tentar trocar de canais. Problema ocorria devido a mudanças concorrentes de login states ao fazer a transição de volta ao jogo.
+
+01 Abril 2019,
+Adicionado mensagens ao spawnar mobs em boxes da LMPQ.
+Revisado conteúdo de ganho de EXP, onde mensagens de ganho simples (sem "party bonus") aparecem em amarelo caso o jogador ganhou experiência sem qualquer contribuição de dano no mob.
+Corrigido cliente não desconectando apropriadamente após fechar o jogo dentro do MTS/Cash Shop, levando a não-update de login state na DB.
+Corrigido inserção de PIC errado no sistema anti-multicliente impossibilitando contas de logarem usando um mesmo IP.
+
+04 Abril 2019,
+Corrigido comandos sem parâmetros contabilizando feed de "um parâmetro vazio".
+Ajustado moderadamente drop rate de vários equipamentos na DB.
+
+06 Abril 2019,
+Corrigido loot de party não funcionando adequadamente após updates recentes.
+Implementado loot de party agora atualizando também loots de jogadores ao entrar numa party (pronta permissão de coleta de loots de outros membros da party).
+Corrigido cooldown de skills de mob não atuando adequadamente.
+
+08 - 09 Abril 2019,
+Resolvido problema de deadlock envolvendo acesso a valores de stats de jogadores e diversas operações de despacho de update de stats.
+Implementado envio de desafio na CPQ utilizando o sistema de matching.
+Corrigido LanguageConstants atuando estaticamente para todos os jogadores.
+Corrigido mob skills que não se encontram disponíveis sendo passados para o cliente para serem usados. Resultado disso era efeito visual de skill sendo mostrado ao usuário, habilidade sem ser aplicada em sequência.
+Corrigido portais do stage "<On the Way Up>" da OPQ levando jogadores incorretamente para a próxima plataforma.
+Corrigido portais do stage "<On the Way Up>" da OPQ retornando jogadores à plataforma inicial, ao invés de retornar a uma plataforma "checkpoint".
+Corrigido fonte da EllinPQ não atribuindo corretamente "Altaire Fragment" aos jogadores.
+Implementado geração de sequências com relação entre as mesmas, utilizadas no estágio "Lab - Unit" da RnJPQ.
+
+12 Abril 2019,
+Corrigido limites de mapas nos eventos de RockSpirit.
+Corrigido ganho visual do EXP de party ocasionalmente mostrando EXP em amarelo ao jogador em party solo.
+Corrigido battleship setando HP inicial menor que o esperado pela skill para jogadores de nível menor que 120.
+
+15 Abril 2019,
+Iniciado operação de introdução da AriantPQ no fonte, a partir do pull request feito pelo Dragohe4rt.
+Ajustado Dimensional Door, agora permitindo jogadores a entrar no saguão de entrada da AriantPQ.
+Refatorado diversos módulos referentes à AriantPQ para uma nova classe, semelhante ao modelo usado pela MCPQ.
+
+19 Abril 2019,
+Ajustado limites de spawn de objetos em instâncias de MCPQ, agora utilizando dados previstos pelo WZ.
+Adicionado mecânica de número de jogadores requerido pelo líder de um lobby na AriantPQ.
+Corrigido jogadores podendo criar/entrar em party dentro de instâncias da AriantPQ.
+Ajustado instância da AriantPQ para perdurar após o fim das batalhas (acesso a King's room ainda faz parte da instância, para adquirir os valores dos resultados do evento).
+Ajustado drops de mobs, agora sendo buscado na DB.
+Ajustado diversas mecânicas da AriantPQ, tais como update visual da pontuação de jogadores (ao dropar itens, ganhar itens, acessar mapa de evento), pontos de batalha persistindo na DB, etc.
+
+21 Abril 2019,
+Adicionado debug de packets descrito pelo Atoot.
+
+22 Abril 2019,
+Corrigido Fredrick retornando valores negativos de mesos ao retornar espólios de mercantes aos jogadores.
+Adicionado informação aprimorada em comando "goto".
+Adicionado contagem de quests completadas de mesmo id.
+Corrigido problema de visibilidade latente com mobs que já foram derrotados aparecendo num flicker ao realizar certas ações (tal como mudar de mapas).
+Nova ferramenta: MapleSkillbookStackUpdate. Livros de skill e melhorias agora levam quantidade de stack padrão (100 unidades).
+Protegido concorrentemente adição de itens ao inventário. Checagens de posição e inserção ocorrem atomicamente.
+Protegido concorrentemente e revisado módulos de ganho de EXP do Writs of Solomon (gachapon EXP).
+Revisado refatoração recente em acesso a valores de stats de jogadores levando a inconsistência nos valores dos mesmos ao colocá-los para rodar em uma nova thread sem proteção concorrente.
+
+24 - 26 Abril 2019,
+Ajustado levemente taxa de respawn de mobs quando não se está usando a flag de respawn completo.
+Ajustado ganhos de stats de ataque ao passar de nível weapons, ganha-se menos do stat que não é a afinidade (watk/matk).
+Implementado sistema de Party Search no fonte. Líderes de party são servidos em FIFO, buscando melhores jogadores na faixa escolhida sempre que possível. Thread separada lida com organização e convites automatizados para jogadores.
+Corrigido drops de mesos sendo bloqueados para drops rápidos de mesos, indevidamente dificultando jogabilidade para certas classes.
+Corrigido caso de XML parser em MapleSkillBookInformationParser não lidando com terminadores "/>" corretamente.
+
+01 - 02 Maio 2019,
+Corrigido jogadores podendo explorar mecânica de checagem de match, não respondendo ao match e sendo permitido se registrar em um novo sem ter respondido ao anterior.
+Corrigido caso de dupe com itens ao serem colocados no storage.
+Adicionado sistema de "qualquer NPC scriptável", com apoio do GabrielSin.
+Adicionado server flag para checagem de IP's ao logar jogadores.
+Corrigido mobskills não sendo devidamente aplicados devido a um deslize anterior que tentaria aplicar indevidamente 2x "uso de skill" (uma das vezes deveria ser somente checagem de rotina).
+Corrigido puppets de arqueiros interrompendo mob statuses para o dono ao serem lançados em campo.
+
+03 Maio 2019,
+Revisado chance de drops de skillbooks. Chance de drops agora está relacionado ao nível do mob em conjunto com disponibilidade do mesmo (em bosses chances são melhores de sair o item).
+Ajustado ganhos de party bonus EXP. Penalidade por diferença de nível agora somente leva em conta membros de equipe que efetivamente participaram da ação.
+Ajustado as mecânicas da Party Search recentemente implementadas, de forma que se comporte bem em jogo.
+Ajustado inicialização do sistema de comandos, agora atuando na inicialização do server, evitando bottleneck de primeira instanciação.
+
+04 Maio 2019,
+Corrigido visão de mob statuses sendo interrompido para o novo controlador ao realizar troca de controladores.
+
+07 - 08 Maio 2019,
+Adicionado ao sistema de buffs suporte para condicionais de atuação (e.g. buff tendo efeito ativo dependendo do mapa de onde o jogador se encontra).
+Implementado ordenação topológica na atualização de buffs. Sistema aponta um "melhor caminho" na atualização dos buffs, desta forma mostrando visualmente ao jogador certas combinações de buffs aplicados que anteriormente falhava em mostrar (e.g. Congrats from GM & Chocolate Wafer).
+Corrigido Arans não recebendo corretamente buff de velocidade de ataque do Dojo.
+Implementado convite de Party Search sensível ao mapa onde os jogadores líder e convidado se encontram. O sistema somente detecta para convites jogadores em mapas "próximos".
+
+12 Maio 2019,
+Corrigido pets sendo indevidamente removido da DB ao realizar operações de retirada do inventário.
+
+15 Maio 2019,
+Revisado, via testes unitários, robustez dos registros/buscas de jogadores e fluidez do sistema de Party Search.
+
+18 - 19 Maio 2019,
+Corrigido glitch de inventário ao colocar itens no storage, problema que foi introduzido recentemente.
+Finalmente aprendido como funciona a mecânica por trás dos nodos "infoEx/infoNumber" amplamente usado pelas quests! :D
+Implementado sistema de "crescimento de itens" na fonte.
+
+20 - 24 Maio 2019,
+Ajustado "Party Search". Ao invés de expirar sessões de busca após N tentativas, líderes são colocados em espera por alguns minutos e podem voltar a buscar automaticamente mais tarde.
+Corrigido itens armazenados no Fredrick não sendo deletados ao deletar personagem, acarretando em inconsistências com cid inexistente.
+Corrigido livros de upgrade de skills stackados em quantidade maior que 1 não podendo ser utilizados.
+Nova ferramenta: MapleGachaponItemidRetriever. A ferramenta lê o arquivo-receita com nomes de itens designados para os diversos gachapons do jogo e, analisando a tabela da DB "handbook" (descrito pela ferramenta MapleIdRetriever), gera diversos arquivos (um para cada gachapon) contendo os ids dos itens especificados (ou próprio nome do item, se não encontrado).
+Revisado script itens da região de Mushroom Empire. Ao invés dos efeitos dos itens atuarem ao acessar portais, agora ao utilizar os próprios itens pelo inventário as regiões anteriormente inacessíveis se tornam exploráveis, seguindo a descrição dos mesmos.
+Revisado transições em 2 mapas da região de Mushroom Empire (um deles agora podendo ser atravessado ao utilizar um ETC, como previsto). Ambas transições projetadas para atuar após uso dos itens designados.
+Corrigido script "secretroom" sempre requerendo o ETC adquirido via questline, algo que tornava a área interna inacessível ao tentar fazê-la múltiplas vezes.
+Reelaborado completamente sistema de loots dos gachapons. Nova lista de loots de cada cidade disponível tenta seguir conteúdos encontrados na Web, supostamente legítimos (vide fontes mencionadas no fonte).
+Adicionado gachapons para El Nath e Ludibrium.
+Corrigido presença de PIN e PIC nulos (modificado para strings vazias).
+Corrigido skill "Monster Magnet" desconectando jogadores ao utilizá-la. Isso ocorria devido a um problema no lado-cliente ao "falhar" em capturar o mob. Nova skill foi remodelada para solucionar isso (além de MP e range, árvore de atributos varia por quantidade máxima de mobs).
+
+26 Maio 2019,
+Ajustado portal que acessa área do NPC Nein Spirit's Baby Dragon, para permitir acesso aos jogadores que concluem a rachadura do ovo, ao invés de somente após completar quest.
+
+31 Maio 2019,
+Implementado método/comando que permite visualizar itens que podem ser ganhos pelo gachapons.
+Corrigido Mystic Doors crashando jogadores ao tentar cancelar o buff da skill excessivamente cedo.
+Corrigido tentativa de acessar boss Prime Minister acarretando em exceções de nulos ao tentar entrar em party.
+Corrigido evento de acesso ao boss Prime Minister não realizando disposes corretamente (assim que evento fica sem jogadores, após mudar de mapa, reviver, desconectar, etc).
+Refatorado estruturas de "ignored" e "monitored" dos comandos, agora utilizando conjuntos e checagem de inteiros ao invés de nomes.
+Refatorado referências aos métodos da família "startQuest" e "completeQuest", com funcionalidade repetida para diversas subclasses de AbstractPlayerInteraction.
+
+01 Junho 2019,
+Corrigido métodos de chegagem por espaço de inventários não avaliando corretamente quantidade de slots necessário para acomodar itens recarregáveis.
+Corrigido minigames não retirando referências dos jogadores devidamente, problema que veio a ocorrer após atualizações recentes.
+Implementado requisição de saída de minigames após fim de partida.
+Corrigido possibilidade de minigames entregando mais de um resultado cada partida (jogadores podem decidir desistir em conjunto, somando pontos).
+Corrigido negação de empate em minigame pelo outro jogador não permitindo o mesmo lançar um pedido de empate em sequência.

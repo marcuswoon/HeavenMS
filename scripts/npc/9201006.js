@@ -71,7 +71,9 @@ function action(mode, type, selection) {
                     cm.sendOk("Congratulations on your wedding. Please talk to #b#p9201007##k to start the afterparty.");
                     cm.dispose();
                 } else if(hasEngagement) {
-                    cm.sendOk("Please continue with the wedding.");
+                    if (!cm.createMarriageWishlist()) {
+                        cm.sendOk("You have already sent your wishlist...");
+                    }
                     cm.dispose();
                 } else {
                     cm.sendOk("You do not have the required item to continue through this wedding. Unfortunately, it's over...");

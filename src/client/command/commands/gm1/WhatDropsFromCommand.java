@@ -46,7 +46,7 @@ public class WhatDropsFromCommand extends Command {
             player.dropMessage(5, "Please do @whatdropsfrom <monster name>");
             return;
         }
-        String monsterName = joinStringFrom(params, 0);
+        String monsterName = player.getLastCommandMessage();
         String output = "";
         int limit = 3;
         Iterator<Pair<Integer, String>> listIterator = MapleMonsterInformationProvider.getMobsIDsFromName(monsterName).iterator();
@@ -62,7 +62,7 @@ public class WhatDropsFromCommand extends Command {
                         if (name == null || name.equals("null") || drop.chance == 0){
                             continue;
                         }
-                        float chance = 1000000 / drop.chance / (!MapleMonsterInformationProvider.getInstance().isBoss(mobId) ? player.getDropRate() : player.getBossDropRate());
+                        float chance = Math.max(1000000 / drop.chance / (!MapleMonsterInformationProvider.getInstance().isBoss(mobId) ? player.getDropRate() : player.getBossDropRate()), 1);
                         output += "- " + name + " (1/" + (int) chance + ")\r\n";
                     } catch (Exception ex){
                         ex.printStackTrace();

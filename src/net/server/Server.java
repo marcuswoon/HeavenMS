@@ -60,6 +60,8 @@ import net.server.guild.MapleGuildCharacter;
 import net.server.worker.CharacterDiseaseWorker;
 import net.server.worker.CouponWorker;
 import net.server.worker.EventRecallCoordinatorWorker;
+import net.server.worker.FredrickWorker;
+import net.server.worker.InvitationWorker;
 import net.server.worker.LoginCoordinatorWorker;
 import net.server.worker.LoginStorageWorker;
 import net.server.worker.RankingCommandWorker;
@@ -78,14 +80,18 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.SkillFactory;
+import client.command.CommandsExecutor;
 import client.inventory.Item;
 import client.inventory.ItemFactory;
+import client.inventory.MaplePet;
 import client.inventory.manipulator.MapleCashidGenerator;
 import client.newyear.NewYearCardRecord;
 import constants.ItemConstants;
 import constants.GameConstants;
+import constants.OpcodeConstants;
 import constants.ServerConstants;
 import java.util.TimeZone;
+import net.server.coordinator.MapleSessionCoordinator;
 import server.CashShop.CashItemFactory;
 import server.MapleSkillbookInformationProvider;
 import server.ThreadManager;
@@ -95,6 +101,7 @@ import server.quest.MapleQuest;
 import tools.AutoJCE;
 import tools.DatabaseConnection;
 import tools.Pair;
+import org.apache.mina.core.session.IoSession;
 
 public class Server {
     
@@ -397,11 +404,12 @@ public class Server {
             int bossdroprate = getWorldProperty(p, "bossdroprate", i, ServerConstants.BOSS_DROP_RATE);
             int questrate = getWorldProperty(p, "questrate", i, ServerConstants.QUEST_RATE);
             int travelrate = getWorldProperty(p, "travelrate", i, ServerConstants.TRAVEL_RATE);
+            int fishingrate = getWorldProperty(p, "fishrate", i, ServerConstants.FISHING_RATE);
             
             World world = new World(i,
                     Integer.parseInt(p.getProperty("flag" + i)),
                     p.getProperty("eventmessage" + i),
-                    exprate, droprate, bossdroprate, mesorate, questrate, travelrate);
+                    exprate, droprate, bossdroprate, mesorate, questrate, travelrate, fishingrate);
 
             worldRecommendedList.add(new Pair<>(i, p.getProperty("whyamirecommended" + i)));
             worlds.add(world);
@@ -487,15 +495,12 @@ public class Server {
         return true;
     }
     
-    private void resetServerWorlds() {
+    private void resetServerWorlds() {  // thanks maple006 for noticing proprietary lists assigned to null
         wldWLock.lock();
         try {
             worlds.clear();
-            worlds = null;
             channels.clear();
-            channels = null;
             worldRecommendedList.clear();
-            worldRecommendedList = null;
         } finally {
             wldWLock.unlock();
         }
@@ -832,33 +837,6 @@ public class Server {
         return rankSystem;
     }
     
-    private static void clearUnreferencedPetIds() {
-        PreparedStatement ps = null;
-        Connection con = null;
-        try {
-            con = DatabaseConnection.getConnection();
-            
-            ps = con.prepareStatement("UPDATE inventoryitems SET petid = -1, expiration = 0 WHERE petid != -1 AND petid NOT IN (SELECT petid FROM pets)");
-            ps.executeUpdate();
-            
-            ps.close();
-            con.close();
-        } catch(SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if(ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-                if(con != null && !con.isClosed()) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
     public void init() {
         Properties p = loadWorldINI();
         if(p == null) {
@@ -891,7 +869,7 @@ public class Server {
             sqle.printStackTrace();
         }
         
-        clearUnreferencedPetIds();
+        MaplePet.clearMissingPetsFromDb();
         MapleCashidGenerator.loadExistentCashIdsFromDb();
         
         IoBuffer.setUseDirectBuffer(false);
@@ -914,14 +892,15 @@ public class Server {
         tMan.register(new LoginCoordinatorWorker(), 60 * 60 * 1000, timeLeft);
         tMan.register(new EventRecallCoordinatorWorker(), 60 * 60 * 1000, timeLeft);
         tMan.register(new LoginStorageWorker(), 2 * 60 * 1000, 2 * 60 * 1000);
+        tMan.register(new FredrickWorker(), 60 * 60 * 1000, 60 * 60 * 1000);
+        tMan.register(new InvitationWorker(), 30 * 1000, 30 * 1000);
         
         long timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();
         System.out.println("Skills loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds");
 
         timeToTake = System.currentTimeMillis();
-        //MapleItemInformationProvider.getInstance().getAllItems(); //unused, rofl
-
+        
         CashItemFactory.getSpecialCashItems();
         System.out.println("Items loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds");
         
@@ -963,6 +942,8 @@ public class Server {
         online = true;
         
         MapleSkillbookInformationProvider.getInstance();
+        OpcodeConstants.generateOpcodeNames();
+        CommandsExecutor.getInstance();
     }
 
     public static void main(String args[]) {
@@ -1624,12 +1605,12 @@ public class Server {
         return gmLevel;
     }
     
-    private static String getRemoteIp(InetSocketAddress isa) {
-        return isa.getAddress().getHostAddress();
+    private static String getRemoteIp(IoSession session) {
+        return MapleSessionCoordinator.getSessionRemoteAddress(session);
     }
     
-    public void setCharacteridInTransition(InetSocketAddress isa, int charId) {
-        String remoteIp = getRemoteIp(isa);
+    public void setCharacteridInTransition(IoSession session, int charId) {
+        String remoteIp = getRemoteIp(session);
         
         lgnWLock.lock();
         try {
@@ -1639,8 +1620,12 @@ public class Server {
         }
     }
     
-    public boolean validateCharacteridInTransition(InetSocketAddress isa, int charId) {
-        String remoteIp = getRemoteIp(isa);
+    public boolean validateCharacteridInTransition(IoSession session, int charId) {
+        if (!ServerConstants.USE_IP_VALIDATION) {
+            return true;
+        }
+        
+        String remoteIp = getRemoteIp(session);
         
         lgnWLock.lock();
         try {
@@ -1648,6 +1633,36 @@ public class Server {
             return cid != null && cid.equals(charId);
         } finally {
             lgnWLock.unlock();
+        }
+    }
+    
+    public Integer freeCharacteridInTransition(IoSession session) {
+        if (!ServerConstants.USE_IP_VALIDATION) {
+            return null;
+        }
+        
+        String remoteIp = getRemoteIp(session);
+        
+        lgnWLock.lock();
+        try {
+            return transitioningChars.remove(remoteIp);
+        } finally {
+            lgnWLock.unlock();
+        }
+    }
+    
+    public boolean hasCharacteridInTransition(IoSession session) {
+        if (!ServerConstants.USE_IP_VALIDATION) {
+            return true;
+        }
+        
+        String remoteIp = getRemoteIp(session);
+        
+        lgnRLock.lock();
+        try {
+            return transitioningChars.containsKey(remoteIp);
+        } finally {
+            lgnRLock.unlock();
         }
     }
     
@@ -1693,7 +1708,7 @@ public class Server {
             if(c.isLoggedIn()) {
                 c.disconnect(false, false);
             } else {
-                c.getSession().close(true);
+                MapleSessionCoordinator.getInstance().closeSession(c.getSession(), true);
             }
         }
     }
@@ -1766,8 +1781,13 @@ public class Server {
         System.out.println("Worlds + Channels are offline.");
         acceptor.unbind();
         acceptor = null;
-        if (!restart) {
-            System.exit(0);
+        if (!restart) {  // shutdown hook deadlocks if System.exit() method is used within its body chores, thanks MIKE for pointing that out
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.exit(0);
+                }
+            }).start();
         } else {
             System.out.println("\r\nRestarting the server....\r\n");
             try {

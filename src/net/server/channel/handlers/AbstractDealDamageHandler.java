@@ -136,6 +136,10 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
     }
 
     protected synchronized void applyAttack(AttackInfo attack, final MapleCharacter player, int attackCount) {
+        if (player.getMap().isOwnershipRestricted(player)) {
+            return;
+        }
+        
         Skill theSkill = null;
         MapleStatEffect attackEffect = null;
         final int job = player.getJob().getId();
@@ -269,12 +273,23 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     
                     int totDamageToOneMonster = 0;
                     List<Integer> onedList = attack.allDamage.get(oned);
+                    
+                    if (attack.magic) { // thanks BHB, Alex (CanIGetaPR) for noticing no immunity status check here
+                        if (monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) {
+                            Collections.fill(onedList, 1);
+                        }
+                    } else {
+                        if (monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) {
+                            Collections.fill(onedList, 1);
+                        }
+                    }
+                    
                     for (Integer eachd : onedList) {
                         if(eachd < 0) eachd += Integer.MAX_VALUE;
                         totDamageToOneMonster += eachd;
                     }
                     totDamage += totDamageToOneMonster;
-                    player.checkMonsterAggro(monster);
+                    monster.aggroMonsterDamage(player, totDamageToOneMonster);
                     if (player.getBuffedValue(MapleBuffStat.PICKPOCKET) != null && (attack.skill == 0 || attack.skill == Rogue.DOUBLE_STAB || attack.skill == Bandit.SAVAGE_BLOW || attack.skill == ChiefBandit.ASSAULTER || attack.skill == ChiefBandit.BAND_OF_THIEVES || attack.skill == Shadower.ASSASSINATE || attack.skill == Shadower.TAUNT || attack.skill == Shadower.BOOMERANG_STEP)) {
                         Skill pickpocket = SkillFactory.getSkill(ChiefBandit.PICKPOCKET);
                         int picklv = (player.isGM()) ? pickpocket.getMaxLevel() : player.getSkillLevel(pickpocket);
@@ -449,7 +464,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                     int skillLv = player.getSkillLevel(threeSnailsId);
 
                                     if(skillLv > 0) {
-                                        AbstractPlayerInteraction api = player.getClient().getAbstractPlayerInteraction();
+                                        AbstractPlayerInteraction api = player.getAbstractPlayerInteraction();
 
                                         int shellId;
                                         switch(skillLv) {
@@ -836,7 +851,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             for (int j = 0; j < ret.numDamage; j++) {
                     int damage = lea.readInt();
                     int hitDmgMax = calcDmgMax;
-                    if(ret.skill == Buccaneer.BARRAGE) {
+                    if(ret.skill == Buccaneer.BARRAGE || ret.skill == ThunderBreaker.BARRAGE) {
                         if(j > 3)
                             hitDmgMax *= Math.pow(2, (j - 3));
                     }

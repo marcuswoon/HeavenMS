@@ -141,4 +141,5 @@ public class MaplePartyCharacter {
     public int getWorld() {
         return world;
     }
+    
 }

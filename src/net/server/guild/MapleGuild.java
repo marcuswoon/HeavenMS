@@ -34,16 +34,23 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 import java.util.concurrent.locks.Lock;
 import net.server.audit.locks.factory.MonitoredReentrantLockFactory;
 
+import net.server.PlayerStorage;
 import net.server.Server;
 import net.server.channel.Channel;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
+import tools.Pair;
 import net.server.audit.locks.MonitoredLockType;
+import net.server.coordinator.MapleInviteCoordinator;
+import net.server.coordinator.MapleInviteCoordinator.InviteType;
+import net.server.coordinator.MapleInviteCoordinator.InviteResult;
+import net.server.coordinator.MapleMatchCheckerCoordinator;
 
 public class MapleGuild {
     
@@ -109,11 +116,11 @@ public class MapleGuild {
             con.close();
         } catch (SQLException se) {
             se.printStackTrace();
-            System.out.println("Unable to read guild information from sql" + se);
+            System.out.println("Unable to read guild information from sql: " + se);
         }
     }
 
-    public void buildNotifications() {
+    private void buildNotifications() {
         if (!bDirty) {
             return;
         }
@@ -260,10 +267,10 @@ public class MapleGuild {
         return name;
     }
 
-    public java.util.Collection<MapleGuildCharacter> getMembers() {
+    public List<MapleGuildCharacter> getMembers() {
         membersLock.lock();
         try {
-            return java.util.Collections.unmodifiableCollection(members);
+            return new ArrayList<>(members);
         } finally {
             membersLock.unlock();
         }
@@ -277,6 +284,30 @@ public class MapleGuild {
         return signature;
     }
 
+    public void broadcastNameChanged() {
+        PlayerStorage ps = Server.getInstance().getWorld(world).getPlayerStorage();
+        
+        for (MapleGuildCharacter mgc : getMembers()) {
+            MapleCharacter chr = ps.getCharacterById(mgc.getId());
+            if (chr == null || !chr.isLoggedinWorld()) continue;
+
+            byte[] packet = MaplePacketCreator.guildNameChanged(chr.getId(), this.getName());
+            chr.getMap().broadcastMessage(chr, packet);
+        }
+    }
+    
+    public void broadcastEmblemChanged() {
+        PlayerStorage ps = Server.getInstance().getWorld(world).getPlayerStorage();
+        
+        for (MapleGuildCharacter mgc : getMembers()) {
+            MapleCharacter chr = ps.getCharacterById(mgc.getId());
+            if (chr == null || !chr.isLoggedinWorld()) continue;
+            
+            byte[] packet = MaplePacketCreator.guildMarkChanged(chr.getId(), this);
+            chr.getMap().broadcastMessage(chr, packet);
+        }
+    }
+    
     public void broadcast(final byte[] packet) {
         broadcast(packet, -1, BCOp.NONE);
     }
@@ -677,7 +708,7 @@ public class MapleGuild {
         this.guildMessage(MaplePacketCreator.updateGP(this.id, this.gp));
     }
 
-    public static MapleGuildResponse sendInvite(MapleClient c, String targetName) {
+    public static MapleGuildResponse sendInvitation(MapleClient c, String targetName) {
         MapleCharacter mc = c.getChannelServer().getPlayerStorage().getCharacterByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
@@ -685,15 +716,58 @@ public class MapleGuild {
         if (mc.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
         }
-        mc.getClient().announce(MaplePacketCreator.guildInvite(c.getPlayer().getGuildId(), c.getPlayer().getName()));
-        return null;
+        
+        MapleCharacter sender = c.getPlayer();
+        if (MapleInviteCoordinator.createInvite(InviteType.GUILD, sender, sender.getGuildId(), mc.getId())) {
+            mc.getClient().announce(MaplePacketCreator.guildInvite(sender.getGuildId(), sender.getName()));
+            return null;
+        } else {
+            return MapleGuildResponse.MANAGING_INVITE;
+        }
     }
-
+    
+    public static boolean answerInvitation(int targetId, String targetName, int guildId, boolean answer) {
+        Pair<InviteResult, MapleCharacter> res = MapleInviteCoordinator.answerInvite(InviteType.GUILD, targetId, guildId, answer);
+        
+        MapleGuildResponse mgr;
+        MapleCharacter sender = res.getRight();
+        switch (res.getLeft()) {
+            case ACCEPTED:
+                return true;
+                
+            case DENIED:
+                mgr = MapleGuildResponse.DENIED_INVITE;
+                break;
+                
+            default:
+                mgr = MapleGuildResponse.NOT_FOUND_INVITE;
+        }
+        
+        if (mgr != null && sender != null) {
+            sender.announce(mgr.getPacket(targetName));
+        }
+        return false;
+    }
+    
+    public static Set<MapleCharacter> getEligiblePlayersForGuild(MapleCharacter guildLeader) {
+        Set<MapleCharacter> guildMembers = new HashSet<>();
+        guildMembers.add(guildLeader);
+        
+        MapleMatchCheckerCoordinator mmce = guildLeader.getWorldServer().getMatchCheckerCoordinator();
+        for (MapleCharacter chr : guildLeader.getMap().getAllPlayers()) {
+            if (chr.getParty() == null && chr.getGuild() == null && mmce.getMatchConfirmationLeaderid(chr.getId()) == -1) {
+                guildMembers.add(chr);
+            }
+        }
+        
+        return guildMembers;
+    }
+    
     public static void displayGuildRanks(MapleClient c, int npcid) {
         try {
             ResultSet rs;
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("SELECT `name`, `GP`, `logoBG`, `logoBGColor`, `logo`, `logoColor` FROM guilds WHERE NOT `guildid` = '1' ORDER BY `GP` DESC LIMIT 50")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `name`, `GP`, `logoBG`, `logoBGColor`, `logo`, `logoColor` FROM guilds ORDER BY `GP` DESC LIMIT 50")) {
                 rs = ps.executeQuery();
                 c.announce(MaplePacketCreator.showGuildRanks(npcid, rs));
             }

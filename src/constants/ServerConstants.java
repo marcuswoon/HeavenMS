@@ -20,6 +20,7 @@ public class ServerConstants {
     public static final int WLDLIST_SIZE = 21;                  //Max possible worlds on the server.
     public static final int CHANNEL_SIZE = 20;                  //Max possible channels per world (which is 20, based on the channel list on login phase).
     public static final int CHANNEL_LOAD = 100;                 //Max players per channel (limit actually used to calculate the World server capacity).
+    public static final int CHANNEL_LOCKS = 20;                 //Total number of structure management locks each channel has.
     
     public static final long RESPAWN_INTERVAL = 10 * 1000;	//10 seconds, 10000.
     public static final long PURGING_INTERVAL = 5 * 60 * 1000;
@@ -27,7 +28,7 @@ public class ServerConstants {
     public static final long  COUPON_INTERVAL = 60 * 60 * 1000;	//60 minutes, 3600000.
     public static final long  UPDATE_INTERVAL = 777;            //Dictates the frequency on which the "centralized server time" is updated.
     
-    public static final boolean ENABLE_PIC = false;             //Pick true/false to enable or disable Pic. Delete character required PIC available.
+    public static final boolean ENABLE_PIC = false;             //Pick true/false to enable or disable Pic. Delete character requires PIC available.
     public static final boolean ENABLE_PIN = false;             //Pick true/false to enable or disable Pin.
     
     public static final int BYPASS_PIC_EXPIRATION = 20;         //Enables PIC bypass, which will remain active for that account by that client machine for N minutes. Set 0 to disable.
@@ -36,7 +37,7 @@ public class ServerConstants {
     public static final boolean AUTOMATIC_REGISTER = true;      //Automatically register players when they login with a nonexistent username.
     public static final boolean BCRYPT_MIGRATION = true;        //Performs a migration from old SHA-1 and SHA-512 password to bcrypt.
     public static final boolean COLLECTIVE_CHARSLOT = false;    //Available character slots are contabilized globally rather than per world server.
-    public static final boolean DETERRED_MULTICLIENT = false;   //Enables multi-client and suspicious remote IP detection on the login system.
+    public static final boolean DETERRED_MULTICLIENT = false;   //Enables detection of multi-client and suspicious remote IP on the login system.
     
     //Besides blocking logging in with several client sessions on the same machine, this also blocks suspicious login attempts for players that tries to login on an account using several diferent remote addresses.
     
@@ -47,6 +48,7 @@ public class ServerConstants {
     
     //Ip Configuration
     public static String HOST;
+    public static boolean LOCALSERVER;
 
     //Other Configuration
     public static boolean JAVA_8;
@@ -60,37 +62,43 @@ public class ServerConstants {
     public static final boolean USE_DEBUG_SHOW_INFO_EQPEXP = false; //Prints on the cmd all equip exp gain info.
     public static       boolean USE_DEBUG_SHOW_RCVD_PACKET = false; //Prints on the cmd all received packet ids.
     public static       boolean USE_DEBUG_SHOW_RCVD_MVLIFE = false; //Prints on the cmd all received move life content.
+    public static final boolean USE_DEBUG_SHOW_PACKET = false;
     public static       boolean USE_SUPPLY_RATE_COUPONS = true;     //Allows rate coupons to be sold through the Cash Shop.
+    public static final boolean USE_IP_VALIDATION = true;           //Enables IP checking when logging in.
     
     public static final boolean USE_MAXRANGE = true;                //Will send and receive packets from all events on a map, rather than those of only view range.
     public static final boolean USE_MAXRANGE_ECHO_OF_HERO = true;
     public static final boolean USE_MTS = false;
+    public static final boolean USE_CPQ = true;                     //Renders the CPQ available or not.
     public static final boolean USE_AUTOHIDE_GM = false;            //When enabled, GMs are automatically hidden when joining. Thanks to Steven Deblois (steven1152).
     public static final boolean USE_BUYBACK_SYSTEM = true;          //Enables the HeavenMS-builtin buyback system, to be used by dead players when clicking the MTS button.
     public static final boolean USE_FIXED_RATIO_HPMP_UPDATE = true; //Enables the HeavenMS-builtin HPMP update based on the current pool to max pool ratio.
     public static final boolean USE_FAMILY_SYSTEM = false;
     public static final boolean USE_DUEY = true;
-    public static final boolean USE_RANDOMIZE_HPMP_GAIN = true;     //Enables randomizing on MaxHP/MaxMP gains and INT accounting for the MaxMP gain.
+    public static final boolean USE_RANDOMIZE_HPMP_GAIN = true;     //Enables randomizing on MaxHP/MaxMP gains and INT accounting for the MaxMP gain on level up.
     public static final boolean USE_STORAGE_ITEM_SORT = true;       //Enables storage "Arrange Items" feature.
     public static final boolean USE_ITEM_SORT = true;               //Enables inventory "Item Sort/Merge" feature.
     public static final boolean USE_ITEM_SORT_BY_NAME = false;      //Item sorting based on name rather than id.
-    public static final boolean USE_PARTY_SEARCH = false;
     public static final boolean USE_PARTY_FOR_STARTERS = true;      //Players level 10 or below can create/invite other players on the given level range.
-    public static final boolean USE_AUTOASSIGN_STARTERS_AP = false; //Beginners level 10 or below have their AP autoassigned (they can't choose to levelup a stat). Set true if the localhost doesn't support AP assigning for beginners level 10 or below.
+    public static final boolean USE_AUTOASSIGN_STARTERS_AP = false; //Beginners level 10 or below have their AP autoassigned (they can't choose to levelup a stat). Set true ONLY if the localhost doesn't support AP assigning for beginners level 10 or below.
+    public static final boolean USE_AUTOASSIGN_SECONDARY_CAP = true;//Prevents AP autoassign from spending on secondary stats after the player class' cap (defined on the autoassign handler) has been reached.
     public static final boolean USE_AUTOBAN = false;                //Commands the server to detect infractors automatically.
     public static final boolean USE_AUTOBAN_LOG = true;             //Log autoban related messages. Still logs even with USE_AUTOBAN disabled.
     public static final boolean USE_AUTOSAVE = true;                //Enables server autosaving feature (saves characters to DB each 1 hour).
     public static final boolean USE_SERVER_AUTOASSIGNER = true;     //HeavenMS-builtin autoassigner, uses algorithm based on distributing AP accordingly with required secondary stat on equipments.
     public static final boolean USE_REFRESH_RANK_MOVE = true;
     public static final boolean USE_ENFORCE_ADMIN_ACCOUNT = false;  //Forces accounts having GM characters to be treated as a "GM account" by the client (localhost). Some of the GM account perks is the ability to FLY, but unable to TRADE.
+    public static final boolean USE_ENFORCE_NOVICE_EXPRATE = false; //Hardsets experience rate 1x for beginners level 10 or under. Ideal for roaming on novice areas without caring too much about losing some stats.
     public static final boolean USE_ENFORCE_HPMP_SWAP = false;      //Forces players to reuse stats (via AP Resetting) located on HP/MP pool only inside the HP/MP stats.
     public static final boolean USE_ENFORCE_MOB_LEVEL_RANGE = true; //Players N levels below the killed mob will gain no experience from defeating it.
     public static final boolean USE_ENFORCE_JOB_LEVEL_RANGE = false;//Caps the player level on the minimum required to advance their current jobs.
     public static final boolean USE_ENFORCE_JOB_SP_RANGE = false;   //Caps the player SP level on the total obtainable by their current jobs. After changing jobs, missing SP will be retrieved.
     public static final boolean USE_ENFORCE_ITEM_SUGGESTION = false;//Forces the Owl of Minerva and the Cash Shop to always display the defined item array instead of those featured by the players.
-    public static final boolean USE_ENFORCE_UNMERCHABLE_CASH = true;//Forces players to not sell CASH items via merchants.
-    public static final boolean USE_ENFORCE_UNMERCHABLE_PET = true; //Forces players to not sell pets via merchants. (since non-named pets gets dirty name and other possible DB-related issues)
+    public static final boolean USE_ENFORCE_UNMERCHABLE_CASH = false;//Forces players to not sell CASH items via merchants.
+    public static final boolean USE_ENFORCE_UNMERCHABLE_PET = false; //Forces players to not sell pets via merchants. (since non-named pets gets dirty name and other possible DB-related issues)
+    public static final boolean USE_ENFORCE_MERCHANT_SAVE = true;   //Forces automatic DB save on merchant owners, at every item movement on shop.
     public static final boolean USE_ENFORCE_MDOOR_POSITION = false; //Forces mystic door to be spawned near spawnpoints.
+    public static final boolean USE_SPAWN_CLEAN_MDOOR = false;       //Makes mystic doors to be spawned without deploy animation. This clears disconnecting issues that may happen when trying to cancel doors a couple seconds after deployment.
     public static final boolean USE_SPAWN_LOOT_ON_ANIMATION = false;//Makes loot appear some time after the mob has been killed (following the mob death animation, instead of instantly).
     public static final boolean USE_SPAWN_RELEVANT_LOOT = true;     //Forces to only spawn loots that are collectable by the player or any of their party members.
     public static final boolean USE_ERASE_PERMIT_ON_OPENSHOP = true;//Forces "shop permit" item to be consumed when player deploy his/her player shop.
@@ -101,7 +109,11 @@ public class ServerConstants {
     public static final boolean USE_MULTIPLE_SAME_EQUIP_DROP = true;//Enables multiple drops by mobs of the same equipment, number of possible drops based on the quantities provided at the drop data.
     public static final boolean USE_BANISHABLE_TOWN_SCROLL = true;  //Enables town scrolls to act as if it's a "player banish", rendering the antibanish scroll effect available.
     public static final boolean USE_ENABLE_FULL_RESPAWN = true;     //At respawn task, always respawn missing mobs when they're available. Spawn count doesn't depend on how many players are currently there.
-    public static final boolean USE_ENABLE_CHAT_LOG = true;         //Write in-game chat to log
+    public static final boolean USE_ENABLE_CHAT_LOG = false;        //Write in-game chat to log
+    public static final boolean USE_REBIRTH_SYSTEM = false;         //Flag to enable/disable rebirth system
+    public static final boolean USE_MAP_OWNERSHIP_SYSTEM = true;    //Flag to enable/disable map ownership system
+    public static final boolean USE_FISHING_SYSTEM = true;          //Flag to enable/disable fishing system
+    public static final boolean USE_NPCS_SCRIPTABLE = true;         //Flag to enable/disable serverside predefined script NPCs.
     
     //Events/PQs Configuration
     public static final boolean USE_OLD_GMS_STYLED_PQ_NPCS = true;  //Enables PQ NPCs with similar behaviour to old GMS style, that skips info about the PQs and immediately tries to register the party in.
@@ -134,20 +146,19 @@ public class ServerConstants {
     public static final int DROP_RATE = 10;
     public static final int BOSS_DROP_RATE = 10;                    //NOTE: Boss drop rate OVERRIDES common drop rate, for bosses-only.
     public static final int QUEST_RATE = 5;                         //Multiplier for Exp & Meso gains when completing a quest. Only available when USE_QUEST_RATE is true. Stacks with server Exp & Meso rates.
+    public static final int FISHING_RATE = 10;                      //Multiplier for success likelihood on meso thrown during fishing.
     public static final int TRAVEL_RATE = 10;                       //Means of transportation rides/departs using 1/N of the default time.
     
     public static final double EQUIP_EXP_RATE = 1.0;                //Rate for equipment exp gain, grows linearly. Set 1.0 for default (about 100~200 same-level range mobs killed to pass equip from level 1 to 2).
-    public static final double PARTY_BONUS_EXP_RATE = 1.0;          //Rate for the party exp reward.
+    public static final float PARTY_BONUS_EXP_RATE = 1.0f;          //Rate for the party exp bonus reward.
     public static final double PQ_BONUS_EXP_RATE = 0.5;             //Rate for the PQ exp reward.
-    
-    public static final int PARTY_EXPERIENCE_MOD = 1;               //Change for event stuff.
     
     //Miscellaneous Configuration
     public static String TIMEZONE = "GMT-3";
     public static boolean USE_DISPLAY_NUMBERS_WITH_COMMA = true;        //Enforce comma on displayed strings (use this when USE_UNITPRICE_WITH_COMMA is active and you still want to display comma-separated values).
     public static boolean USE_UNITPRICE_WITH_COMMA = true;              //Set this accordingly with the layout of the unitPrices on Item.wz XML's, whether it's using commas or dots to represent fractions.
     public static final byte MIN_UNDERLEVEL_TO_EXP_GAIN = 20;           //Characters are unable to get EXP from a mob if their level are under this threshold, only if "USE_ENFORCE_MOB_LEVEL_RANGE" is enabled. For bosses, this attribute is doubled.
-    public static final byte MIN_UNDERLEVEL_TO_EXP_LEECH = 40;          //Characters are unable to leech EXP from party member kills whose level difference are past this limit.
+    public static final byte MIN_RANGELEVEL_TO_EXP_LEECH = 40;          //Characters are unable to leech EXP from party member kills whose level difference are past this limit.
     public static final byte MAX_MONITORED_BUFFSTATS = 5;               //Limits accounting for "dormant" buff effects, that should take place when stronger stat buffs expires.
     public static final int MAX_AP = 32767;                             //Max AP allotted on the auto-assigner.
     public static final int MAX_EVENT_LEVELS = 8;                       //Event has different levels of rewarding system.
@@ -155,6 +166,7 @@ public class ServerConstants {
     public static final long PET_LOOT_UPON_ATTACK = (long)(0.7 * 1000); //Time the pet must wait before trying to pick items up.
     public static final int TOT_MOB_QUEST_REQUIREMENT = 77;             //Overwrites old 999-mobs requirement for the ToT questline with new requirement value, set 0 for default.
     public static final int MOB_REACTOR_REFRESH_TIME = 30 * 1000;       //Overwrites refresh time for those reactors oriented to inflict damage to bosses (Ice Queen, Riche), set 0 for default.
+    public static final int PARTY_SEARCH_REENTRY_LIMIT = 10;            //Max amount of times a party leader is allowed to persist on the Party Search before entry expiration (thus needing to manually restart the Party Search to be able to search for members).
     
     //Dangling Items/Locks Configuration
     public static final int ITEM_EXPIRE_TIME  = 3 * 60 * 1000;  //Time before items start disappearing. Recommended to be set up to 3 minutes.
@@ -166,11 +178,13 @@ public class ServerConstants {
     public static final int ITEM_EXPIRE_CHECK = 10 * 1000;      //Interval between item expiring tasks on maps, which checks and makes disappear expired items.
     public static final int ITEM_LIMIT_ON_MAP = 200;            //Max number of items allowed on a map.
     public static final int MAP_VISITED_SIZE = 5;               //Max length for last mapids visited by a player. This is used to recover and update drops on these maps accordingly with player actions.
-    public static final int MAP_DAMAGE_OVERTIME_INTERVAL = 5000;//Interval in seconds between map environment damage (e.g. El Nath and Aqua Road surrondings).
+    public static final int MAP_DAMAGE_OVERTIME_INTERVAL = 5000;//Interval in milliseconds between map environment damage (e.g. El Nath and Aqua Road surrondings).
     
     //Channel Mob Disease Monitor Configuration
-    public static final int MOB_STATUS_MONITOR_PROC = 200;     //Frequency in milliseconds between each proc on the mob disease monitor schedule.
-    public static final int MOB_STATUS_MONITOR_LIFE = 84;      //Idle proc count the mob disease monitor is allowed to be there before closing it due to inactivity.
+    public static final int MOB_STATUS_MONITOR_PROC = 200;      //Frequency in milliseconds between each proc on the mob disease monitor schedule.
+    public static final int MOB_STATUS_MONITOR_LIFE = 84;       //Idle proc count the mob disease monitor is allowed to be there before closing it due to inactivity.
+    public static final int MOB_STATUS_AGGRO_PERSISTENCE = 2;   //Idle proc count on aggro update for a mob to keep following the current controller, given him/her is the leading damage dealer.
+    public static final int MOB_STATUS_AGGRO_INTERVAL = 5000;   //Interval in milliseconds between aggro logistics update.
     
     //Some Gameplay Enhancing Configurations
     //Scroll Configuration
@@ -210,6 +224,7 @@ public class ServerConstants {
     public static final int QUEST_POINT_PER_EVENT_CLEAR = 1;     //Each completed event instance awards N quest points, set 0 to disable.
     
     //Guild Configuration
+    public static final int CREATE_GUILD_MIN_PARTNERS = 6;       //Minimum number of members on Guild Headquarters to establish a new guild.
     public static final int CREATE_GUILD_COST = 1500000;
     public static final int CHANGE_EMBLEM_COST = 5000000;
     public static final int EXPAND_GUILD_BASE_COST = 500000;
@@ -268,6 +283,7 @@ public class ServerConstants {
     public static final int WEDDING_RESERVATION_TIMEOUT = 10;   //Limit time in minutes for the couple to show up before cancelling the wedding reservation.
     public static final int WEDDING_RESERVATION_INTERVAL = 60;  //Time between wedding starts in minutes.
     public static final int WEDDING_BLESS_EXP = 30000;          //Exp gained per bless count.
+    public static final int WEDDING_GIFT_LIMIT = 1;             //Max number of gifts per person to same wishlist on marriage instances.
     public static final boolean WEDDING_BLESSER_SHOWFX = true;  //Pops bubble sprite effect on players blessing the couple. Setting this false shows the blessing effect on the couple instead.
 
     //Buyback Configuration
@@ -292,6 +308,7 @@ public class ServerConstants {
 
             //Server Host
             ServerConstants.HOST = p.getProperty("HOST");
+            ServerConstants.LOCALSERVER = ServerConstants.HOST.startsWith("127.") || ServerConstants.HOST.startsWith("localhost");
 
             //Sql Database
             ServerConstants.DB_URL = p.getProperty("URL");

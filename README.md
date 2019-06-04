@@ -1,4 +1,4 @@
-<img src="https://heavenmssurveyhome.files.wordpress.com/2018/12/heavenmslogo.png"  width="370" height="auto">
+﻿<img src="https://heavenmssurveyhome.files.wordpress.com/2018/12/heavenmslogo.png"  width="370" height="auto">
 
 ## Head developer: Ronan C. P. Lana
 
@@ -6,7 +6,7 @@ Besides myself for maintaining this repository, credits are to be given to Wizet
 
 Regarding distributability and usage of the code presented here: like it was before, this MapleStory server is open-source. By that, it is meant that anyone is **free to install, use, modify and redistribute the contents**, as long as there is **no kind of commercial trading involved** and the **credits to the original creators are maintained** within the codes.
 
-This is a NetBeans 8.0.2 Project, that MUST be built and run under JDK/JRE 7 (1.7.0_79+) in order to run properly. This means that it's easier to install the project via opening the server project folder inside NetBeans' IDE. Once installed, build this project on your machine and run the server using the "launch.bat" application.
+This is a NetBeans 8.0.2 Project, that MUST be built and run on Java 7 (JDK/JRE 1.7.0_79+) in order to run properly. This means that it's easier to install the project via opening the server project folder inside NetBeans' IDE. Once installed, build this project on your machine and run the server using the "launch.bat" application.
 
 In this project, many gameplay-wise issues generated from either the original WZ files and the server source have been partially or completely solved. Considering the use of the provided edited WZ's and server-side wz.xml files should be of the greatest importance when dealing with this instance of server source, in order to perceive it at it's full potential. My opinion, though!
 
@@ -19,15 +19,19 @@ Server files: https://github.com/ronancpl/HeavenMS
 
 Client files & general tools: https://drive.google.com/drive/folders/0BzDsHSr-0V4MYVJ0TWIxd05hYUk
 
+Java7 SDK: https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html
+
 **Important note about localhosts**: these executables are red-flagged by antivirus tools as __potentially malicious softwares__, this happens due to the reverse engineering methods that were applied onto these software artifacts. Those depicted here have been put to use for years already and posed no harm so far, so they are soundly assumed to be safe.
 
-  Latest localhost: https://hostr.co/m2bVtnizCtmD
+  Latest localhost: https://hostr.co/tsYsQzzV6xT0
 
   The following list, in bottom-up chronological order, holds information regarding all changes that were applied from the starting localhost used in this development. Some lines have a link attached, that will lead you to a snapshot of the localhost at that version of the artifact. Naturally, later versions holds all previous changes along with the proposed changes.
 
 **Change log:**
 
-  * Removed block on applying attack-based strengthening gems on non-weapon equipments.
+  * Fixed some 'rn' problems with quest icons & removed "tab" from party leader changed message.
+
+  * Removed block on applying attack-based strengthening gems on non-weapon equipments. https://hostr.co/m2bVtnizCtmD
 
   * Set a higher cap for SPEED.
 
@@ -48,6 +52,15 @@ Client files & general tools: https://drive.google.com/drive/folders/0BzDsHSr-0V
   * Fraysa's https://hostr.co/gJbLZITRVHmv
 
   * Eric's MapleSilver starting on window-mode.
+
+---
+### Open-source client development - HeavenClient
+
+Continuing from where **SYJourney**'s JourneyClient has finished contributions (as of 5 Jul 2016), an open-source development of a software artifact designed to handle both gaming operations and interactions with the server is being conducted.
+
+Newer implementations are being maintained by **頼晏 (ryantpayton)** and aims to offer higher display resolution, bring recent UI contents for the pre-BB gameplay and incremental support on overall gaming perspective.
+
+HeavenClient Github: https://github.com/ryantpayton/HeavenClient
 
 ---
 ### Development information
@@ -71,15 +84,23 @@ By taking the v83 MapleStory as the angular stone, incrementally look forward to
 
 #### Announcements
 
-HeavenMS development achieved an acceptable state-of-the-art and will get into a halt. A heartfelt thanks for everyone that contributed in some way for the progress of this server!
+HeavenMS development as we can see right now achieved an acceptable state-of-the-art. A heartfelt thanks for everyone that contributed in some way for the progress of this server!
 
-Although development is halted, support for fixing features that were implemented here is still up. You can still actively help us improve the server by issuing pull requests with informative details about what's changing.
+As development and support for fixing features that were implemented here is still up, with **your** help we can improve it even further! Please help where you can to better the server for everyone.
+
+Furthermore, you can actively help improving the server by issuing pull requests with informative details about what's changing.
+
+Note for anyone up to contribute further pull requests: make awareness to use __english language__ in codes and messages, as usage of any other languages will render it open to faculty of whether this content will be ready to be accepted or *further changes are going to be requested* before it becomes apt to merge.
+
+#### Support HeavenMS
 
 If you liked this project, please don't forget to __star__ the repo ;) .
 
 It's never enough to tell this, thanks to everyone that have been contributing something for the continuous improvement of the server! Be it through bug reports, donation, code snippets and/or pull requests.
 
 Our Discord channel is still available on: https://discord.gg/Q7wKxHX
+
+<hr id="donate" />
 
 ### Donation
 
@@ -93,7 +114,7 @@ Paypal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3K8
 
 * HeavenMS staff has __no current intention__ to publicly open a server with this source, if that ever comes to happen this note will be lifted. __Don't be scammed!__
 
-* This server source is __NOT intended to be stable__ as is. Proper deadlock review and other maintenance checks are needed in order to make it suitable for production use.
+* This server source is __NOT intended to be stable__ as is. Proper deadlock review and other maintenance contributions are needed in order to make it steps ahead on viability.
 
 ---
 ### Preparing the ambient 
@@ -160,11 +181,11 @@ Now open NetBeans, and click "Open a project..." . Select then the "HeavenMS" fo
 
 Inside the project, you may encounter some code errors.
 
-These errors pops-up because you have not set yet the "cores" of the project. From the project hierarchy, right-click the project and select "Resolve Project Problems".
+Firstly, a **new Java7 platform** must be defined to run the server. Click "Manage Platforms...", then "Add platform", browse through "C:\Program Files\Java" for the JDK 1.7 folder. Then, name this new platform "JDK 1.7".
 
-Locate the "cores" folder inside the root directory of this project and manually configure the missing files with the files that are there.
+In case errors still show up, these errors probably occurs because you have yet to set the core JARs of the project. From the project hierarchy, right-click the project and select "Resolve Project Problems".
 
-Also, a new Java7 platform must be defined to run the server. Click "Manage Platforms...", then "Add platform", browse through until you locate the Java7 folder in the file system, it should be at "C:\Program Files\Java". Then, name this new platform "JDK 1.7".
+Locate the folder "cores" inside the root directory of this project and manually configure the missing files on NetBeans (mina-core, slf4j-api, ...).
 
 Finally, select "Clean and Build project" to build the JAR file for the MapleStory server. Once done, make sure both WampServer and Hamachi are on and functional, then execute "launch.bat" on the root of the project. If no errors were raised from this action, your MapleStory server is now online.
 
@@ -184,7 +205,7 @@ The client's set-up is quite straightforward:
 
 #### Editing localhost IP target
 
-If you are not using "localhost" as the target IP on the server's config file, you will need to HEX-EDIT "localhost.exe" to fetch your IP. Track down all IP locations by searching for "Text String" "127.0.0.1", and applying the changes wherever it fits.
+If you are not using "localhost" as the target IP on the server's config file, you will need to HEX-EDIT "localhost.exe" to fetch your IP. Track down all IP locations by searching for "Type: String" "127.0.0.1", and applying the changes wherever it fits.
 
 To hex-edit, install the Neo Hex Editor from "free-hex-editor-neo.exe" and follow their instructions. Once done, open "localhost.exe" for editing and overwrite the IP values under the 3 addresses. Save the changes and exit the editor.
 

@@ -217,13 +217,17 @@ public final class ItemConstants {
     }
 
     public static boolean isWeapon(int itemId) {
-        return itemId >= 1302000 && itemId < 1492024;
+        return itemId >= 1302000 && itemId < 1493000;
     }
     
     public static boolean isEquipment(int itemId) {
         return itemId < 2000000 && itemId != 0;
     }
 
+    public static boolean isFishingChair(int itemId) {
+        return itemId == 3011000;
+    }
+    
     public static boolean isMedal(int itemId) {
         return itemId >= 1140000 && itemId < 1143000;
     }
@@ -234,5 +238,13 @@ public final class ItemConstants {
     
     public static boolean isWeddingToken(int itemId) {
         return itemId >= 4031357 && itemId <= 4031364;
+    }
+    
+    public static boolean isFace(int itemId) {
+        return itemId >= 20000 && itemId < 22000;
+    }
+    
+    public static boolean isHair(int itemId) {
+        return itemId >= 30000 && itemId < 35000;
     }
 }

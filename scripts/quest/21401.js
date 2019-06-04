@@ -22,13 +22,13 @@ function start(mode, type, selection) {
 	} else if (status == 3) {
 		qm.sendAcceptDecline("Please, Aran. Please stop me from becoming enraged. Only you can control me. It's getting out of my hands now. Please do whatever it takes to #rstop me from going berserk#k!");
 	} else if (status == 4) {
-		qm.startQuest();
-		
-                var mb = qm.getEventManager("MahaBattle");
-                mb.newInstance("MahaBattle");
-                mb.setProperty("player", qm.getPlayer().getName());
-                mb.startInstance(qm.getPlayer());
-		
+		var em = qm.getEventManager("MahaBattle");
+                if (!em.startInstance(qm.getPlayer())) {
+                    qm.sendOk("There is currently someone in this map, come back later.");
+                } else {
+                    qm.startQuest();
+                }
+                
 		qm.dispose();
 	}
 }
@@ -55,8 +55,14 @@ function end(mode, type, selection) {
 				qm.dispose();
 				return;
 			}
+                        if (!qm.canHold(2280003, 1)) {
+                                qm.sendOk("Hey, your #buse#k inventory is full. I need you to make at least 1 empty slot to complete this quest.");
+				qm.dispose();
+				return;
+                        }
 			
 			qm.gainItem(1142132, true);
+                        qm.gainItem(2280003, 1);
 			qm.changeJobById(2112);
 			
 			qm.completeQuest();

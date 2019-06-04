@@ -158,6 +158,12 @@ function action(mode, type, selection) {
                                         cm.dispose();
                                         return;
                                     }
+                                    
+                                    if(!cm.getUnclaimedMarriageGifts().isEmpty() || !partner.getAbstractPlayerInteraction().getUnclaimedMarriageGifts().isEmpty()) {
+                                        cm.sendOk("Eerhm... I'm sorry, something doesn't seem right according to the Amoria's Wedding Gift Registry reserve. Please check in the situation with #b#p9201014##k.");
+                                        cm.dispose();
+                                        return;
+                                    }
 
                                     var hasCommon = cm.haveItem(weddingEntryTicketCommon);
                                     var hasPremium = cm.haveItem(weddingEntryTicketPremium);
@@ -172,7 +178,7 @@ function action(mode, type, selection) {
 
                                             var expirationTime = cserv.getRelativeWeddingTicketExpireTime(resStatus);
                                             cm.gainItem(weddingSendTicket,15,false,true,expirationTime);
-                                            partner.getClient().getAbstractPlayerInteraction().gainItem(weddingSendTicket,15,false,true,expirationTime);
+                                            partner.getAbstractPlayerInteraction().gainItem(weddingSendTicket,15,false,true,expirationTime);
 
                                             var placeTime = cserv.getWeddingReservationTimeLeft(weddingId);
 

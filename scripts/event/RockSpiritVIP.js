@@ -21,9 +21,13 @@
 
 importPackage(Packages.tools);
 
-var exitMap;
 var entryMap;
+var exitMap;
 var otherMap;
+
+var minMapId = 103040410;
+var maxMapId = 103040460;
+
 var minPlayers = 1;
 var fightTime = 30;
 var timer = 1000 * 60 * fightTime;
@@ -34,8 +38,11 @@ function init() {
 	otherMap = em.getChannelServer().getMapFactory().getMap(103040450);
 }
 
-function setup() {
-    var eim = em.newInstance("RockSpiritVIP_" + em.getProperty("player"));
+function setup(level, lobbyid) {
+    var eim = em.newInstance("RockSpiritVIP_" + lobbyid);
+    eim.setProperty("level", level);
+    eim.setProperty("boss", "0");
+    
     respawn(eim);
     eim.startEventTimer(timer);    
 	return eim;
@@ -77,7 +84,7 @@ function playerDisconnected(eim, player) {
 }
 
 function changedMap(eim, player, mapid) {
-    if(mapid == exitMap.getId()) {
+    if (mapid < minMapId || mapid > maxMapId) {
         if (eim.isEventTeamLackingNow(true, minPlayers, player)) {
             eim.unregisterPlayer(player);
             end(eim);

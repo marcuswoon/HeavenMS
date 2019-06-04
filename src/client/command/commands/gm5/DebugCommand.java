@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DebugCommand extends Command {
-    private final static String debugTypes[] = {"monster", "packet", "portal", "spawnpoint", "pos", "map", "mobsp", "event", "areas", "reactors", "servercoupons", "playercoupons", "timer", "marriage", ""};
+    private final static String debugTypes[] = {"monster", "packet", "portal", "spawnpoint", "pos", "map", "mobsp", "event", "areas", "reactors", "servercoupons", "playercoupons", "timer", "marriage", "buff", ""};
     
     {
         setDescription("");
@@ -72,18 +72,18 @@ public class DebugCommand extends Command {
                 for (MapleMapObject monstermo : monsters) {
                     MapleMonster monster = (MapleMonster) monstermo;
                     MapleCharacter controller = monster.getController();
-                    player.message("Monster ID: " + monster.getId() + " Aggro target: " + ((controller != null) ? controller.getName() : "<none>"));
+                    player.message("Monster ID: " + monster.getId() + " Aggro target: " + ((controller != null) ? controller.getName() + " Has aggro: " + monster.isControllerHasAggro() + " Knowns aggro: " + monster.isControllerKnowsAboutAggro() : "<none>"));
                 }
                 break;
 
             case "packet":
-                player.getMap().broadcastMessage(MaplePacketCreator.customPacket(joinStringFrom(params, 1)));
+                //player.getMap().broadcastMessage(MaplePacketCreator.customPacket(joinStringFrom(params, 1)));
                 break;
 
             case "portal":
                 MaplePortal portal = player.getMap().findClosestPortal(player.getPosition());
                 if (portal != null)
-                    player.dropMessage(6, "Closest portal: " + portal.getId() + " '" + portal.getName() + "' Type: " + portal.getType() + " --> toMap: " + portal.getTargetMapId() + " scriptname: '" + portal.getScriptName() + "' state: " + portal.getPortalState() + ".");
+                    player.dropMessage(6, "Closest portal: " + portal.getId() + " '" + portal.getName() + "' Type: " + portal.getType() + " --> toMap: " + portal.getTargetMapId() + " scriptname: '" + portal.getScriptName() + "' state: " + (portal.getPortalState() ? 1 : 0) + ".");
                 else player.dropMessage(6, "There is no portal on this map.");
                 break;
 
@@ -157,7 +157,10 @@ public class DebugCommand extends Command {
             case "marriage":
                 c.getChannelServer().debugMarriageStatus();
                 break;
-
+            
+            case "buff":
+                c.getPlayer().debugListAllBuffs();
+                break;
         }
     }
 }
