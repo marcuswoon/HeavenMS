@@ -68,7 +68,7 @@ public class MapleInventoryManipulator {
         return addById(c, itemId, quantity, owner, petid, (byte) 0, expiration);
     }
 
-    public static boolean addById(MapleClient c, int itemId, short quantity, String owner, int petid, byte flag, long expiration) {
+    public static boolean addById(MapleClient c, int itemId, short quantity, String owner, int petid, short flag, long expiration) {
         MapleCharacter chr = c.getPlayer();
         MapleInventoryType type = ItemConstants.getInventoryType(itemId);
         
@@ -90,7 +90,7 @@ public class MapleInventoryManipulator {
         }
     }
     
-    private static boolean addByIdInternal(MapleClient c, MapleCharacter chr, MapleInventoryType type, MapleInventory inv, int itemId, short quantity, String owner, int petid, byte flag, long expiration) {
+    private static boolean addByIdInternal(MapleClient c, MapleCharacter chr, MapleInventoryType type, MapleInventory inv, int itemId, short quantity, String owner, int petid, short flag, long expiration) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(c, itemId);
@@ -713,7 +713,7 @@ public class MapleInventoryManipulator {
             source.setQuantity((short) (source.getQuantity() - quantity));
             c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(1, source))));
             
-            if(ItemConstants.isNewYearCardEtc(itemId)) {
+            if (ItemConstants.isNewYearCardEtc(itemId)) {
                 if(itemId == 4300000) {
                     NewYearCardRecord.removeAllNewYearCard(true, chr);
                     c.getAbstractPlayerInteraction().removeAll(4300000);
@@ -723,13 +723,9 @@ public class MapleInventoryManipulator {
                 }
             } else if (ItemConstants.isWeddingRing(source.getItemId())) {
                 map.disappearingItemDrop(chr, chr, target, dropPos);
-            } else if (map.getEverlast()) {
-                if (ii.isDropRestricted(target.getItemId()) || ii.isCash(target.getItemId()) || isDroppedItemRestricted(target)) {
-                    map.disappearingItemDrop(chr, chr, target, dropPos);
-                } else {
-                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
-                }
-            } else if (ii.isDropRestricted(target.getItemId()) || ii.isCash(target.getItemId()) || isDroppedItemRestricted(target)) {
+            }
+            
+            if (ii.isDropRestricted(target.getItemId()) || ii.isCash(target.getItemId()) || isDroppedItemRestricted(target)) {
                 map.disappearingItemDrop(chr, chr, target, dropPos);
             } else {
                 map.spawnItemDrop(chr, chr, target, dropPos, true, true);
@@ -750,24 +746,20 @@ public class MapleInventoryManipulator {
             c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(3, source))));
             if (src < 0) {
                 chr.equipChanged();
-            } else if(ItemConstants.isNewYearCardEtc(itemId)) {
-                if(itemId == 4300000) {
+            } else if (ItemConstants.isNewYearCardEtc(itemId)) {
+                if (itemId == 4300000) {
                     NewYearCardRecord.removeAllNewYearCard(true, chr);
                     c.getAbstractPlayerInteraction().removeAll(4300000);
                 } else {
                     NewYearCardRecord.removeAllNewYearCard(false, chr);
                     c.getAbstractPlayerInteraction().removeAll(4301000);
                 }
+            } else if (ItemConstants.isWeddingRing(source.getItemId())) {
+                map.disappearingItemDrop(chr, chr, source, dropPos);
             }
             
-            if (map.getEverlast()) {
-                if (ii.isDropRestricted(itemId) || ii.isCash(itemId) || isDroppedItemRestricted(source)) {
-                    map.disappearingItemDrop(chr, chr, source, dropPos);
-                } else {
-                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
-                }
-            } else if (ii.isDropRestricted(itemId) || ii.isCash(itemId) || isDroppedItemRestricted(source)) {
-                map.disappearingItemDrop(chr, chr, source, dropPos);           
+            if (ii.isDropRestricted(itemId) || ii.isCash(itemId) || isDroppedItemRestricted(source)) {
+                map.disappearingItemDrop(chr, chr, source, dropPos);
             } else {
                 map.spawnItemDrop(chr, chr, source, dropPos, true, true);
             }

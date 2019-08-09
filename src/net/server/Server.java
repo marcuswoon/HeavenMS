@@ -57,16 +57,18 @@ import net.server.channel.Channel;
 import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
+import net.server.worker.BossLogWorker;
 import net.server.worker.CharacterDiseaseWorker;
 import net.server.worker.CouponWorker;
 import net.server.worker.EventRecallCoordinatorWorker;
-import net.server.worker.FredrickWorker;
+import net.server.worker.DueyFredrickWorker;
 import net.server.worker.InvitationWorker;
 import net.server.worker.LoginCoordinatorWorker;
 import net.server.worker.LoginStorageWorker;
 import net.server.worker.RankingCommandWorker;
 import net.server.worker.RankingLoginWorker;
 import net.server.worker.ReleaseLockWorker;
+import net.server.worker.RespawnWorker;
 import net.server.world.World;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -96,10 +98,12 @@ import server.CashShop.CashItemFactory;
 import server.MapleSkillbookInformationProvider;
 import server.ThreadManager;
 import server.TimerManager;
+import server.expeditions.MapleExpeditionBossLog;
 import server.life.MaplePlayerNPCFactory;
 import server.quest.MapleQuest;
 import tools.AutoJCE;
 import tools.DatabaseConnection;
+import tools.FilePrinter;
 import tools.Pair;
 import org.apache.mina.core.session.IoSession;
 
@@ -527,6 +531,16 @@ public class Server {
         return Math.max(0, nextHour.getTimeInMillis() - System.currentTimeMillis());
     }
     
+    private static long getTimeLeftForNextDay() {
+        Calendar nextDay = Calendar.getInstance();
+        nextDay.add(Calendar.DAY_OF_MONTH, 1);
+        nextDay.set(Calendar.HOUR, 0);
+        nextDay.set(Calendar.MINUTE, 0);
+        nextDay.set(Calendar.SECOND, 0);
+        
+        return Math.max(0, nextDay.getTimeInMillis() - System.currentTimeMillis());
+    }
+    
     public Map<Integer, Integer> getCouponRates() {
         return couponRates;
     }
@@ -868,7 +882,8 @@ public class Server {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-        
+        applyAllNameChanges(); //name changes can be missed by INSTANT_NAME_CHANGE
+        applyAllWorldTransfers();
         MaplePet.clearMissingPetsFromDb();
         MapleCashidGenerator.loadExistentCashIdsFromDb();
         
@@ -892,8 +907,13 @@ public class Server {
         tMan.register(new LoginCoordinatorWorker(), 60 * 60 * 1000, timeLeft);
         tMan.register(new EventRecallCoordinatorWorker(), 60 * 60 * 1000, timeLeft);
         tMan.register(new LoginStorageWorker(), 2 * 60 * 1000, 2 * 60 * 1000);
-        tMan.register(new FredrickWorker(), 60 * 60 * 1000, 60 * 60 * 1000);
+        tMan.register(new DueyFredrickWorker(), 60 * 60 * 1000, timeLeft);
         tMan.register(new InvitationWorker(), 30 * 1000, 30 * 1000);
+        tMan.register(new RespawnWorker(), ServerConstants.RESPAWN_INTERVAL, ServerConstants.RESPAWN_INTERVAL);
+        
+        timeLeft = getTimeLeftForNextDay();
+        MapleExpeditionBossLog.resetBossLogTable();
+        tMan.register(new BossLogWorker(), 24 * 60 * 60 * 1000, timeLeft);
         
         long timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();
@@ -1533,6 +1553,82 @@ public class Server {
             return !accountChars.containsKey(accId);
         } finally {
             lgnRLock.unlock();
+        }
+    }
+    
+    private static void applyAllNameChanges() {
+        try (Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM namechanges WHERE completionTime IS NULL")) {
+            ResultSet rs = ps.executeQuery();
+            List<Pair<String, String>> changedNames = new LinkedList<Pair<String, String>>(); //logging only
+            while(rs.next()) {
+                con.setAutoCommit(false);
+                int nameChangeId = rs.getInt("id");
+                int characterId = rs.getInt("characterId");
+                String oldName = rs.getString("old");
+                String newName = rs.getString("new");
+                boolean success = MapleCharacter.doNameChange(con, characterId, oldName, newName, nameChangeId);                
+                if(!success) con.rollback(); //discard changes
+                else changedNames.add(new Pair<String, String>(oldName, newName));
+                con.setAutoCommit(true);
+            }
+            //log
+            for(Pair<String, String> namePair : changedNames) {
+                FilePrinter.print(FilePrinter.CHANGE_CHARACTER_NAME, "Name change applied : from \"" + namePair.getLeft() + "\" to \"" + namePair.getRight() + "\" at " + Calendar.getInstance().getTime().toString());
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+            FilePrinter.printError(FilePrinter.CHANGE_CHARACTER_NAME, e, "Failed to retrieve list of pending name changes.");
+        }
+    }
+    
+    private static void applyAllWorldTransfers() {
+        try (Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM worldtransfers WHERE completionTime IS NULL")) {
+            ResultSet rs = ps.executeQuery();
+            List<Integer> removedTransfers = new LinkedList<Integer>();
+            while(rs.next()) {
+                int nameChangeId = rs.getInt("id");
+                int characterId = rs.getInt("characterId");
+                int oldWorld = rs.getInt("from");
+                int newWorld = rs.getInt("to");
+                String reason = MapleCharacter.checkWorldTransferEligibility(con, characterId, oldWorld, newWorld); //check if character is still eligible
+                if(reason != null) {
+                    removedTransfers.add(nameChangeId);
+                    FilePrinter.print(FilePrinter.WORLD_TRANSFER, "World transfer cancelled : Character ID " + characterId + " at " + Calendar.getInstance().getTime().toString() + ", Reason : " + reason);
+                    try (PreparedStatement delPs = con.prepareStatement("DELETE FROM worldtransfers WHERE id = ?")) {
+                        delPs.setInt(1, nameChangeId);
+                        delPs.executeUpdate();
+                    } catch(SQLException e) { 
+                        e.printStackTrace();
+                        FilePrinter.printError(FilePrinter.WORLD_TRANSFER, e, "Failed to delete world transfer for character ID " + characterId);
+                    }
+                }
+            }
+            rs.beforeFirst();
+            List<Pair<Integer, Pair<Integer, Integer>>> worldTransfers = new LinkedList<Pair<Integer, Pair<Integer, Integer>>>(); //logging only <charid, <oldWorld, newWorld>>
+            while(rs.next()) {
+                con.setAutoCommit(false);
+                int nameChangeId = rs.getInt("id");
+                if(removedTransfers.contains(nameChangeId)) continue;
+                int characterId = rs.getInt("characterId");
+                int oldWorld = rs.getInt("from");
+                int newWorld = rs.getInt("to");
+                boolean success = MapleCharacter.doWorldTransfer(con, characterId, oldWorld, newWorld, nameChangeId);
+                if(!success) con.rollback();
+                else worldTransfers.add(new Pair<Integer, Pair<Integer, Integer>>(characterId, new Pair<Integer, Integer>(oldWorld, newWorld)));
+                con.setAutoCommit(true);
+            }
+            //log
+            for(Pair<Integer, Pair<Integer, Integer>> worldTransferPair : worldTransfers) {
+                int charId = worldTransferPair.getLeft();
+                int oldWorld = worldTransferPair.getRight().getLeft();
+                int newWorld = worldTransferPair.getRight().getRight();
+                FilePrinter.print(FilePrinter.WORLD_TRANSFER, "World transfer applied : Character ID " + charId + " from World " + oldWorld + " to World " + newWorld + " at " + Calendar.getInstance().getTime().toString());
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+            FilePrinter.printError(FilePrinter.WORLD_TRANSFER, e, "Failed to retrieve list of pending world transfers.");
         }
     }
     

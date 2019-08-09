@@ -150,12 +150,14 @@ public class MapleStatEffect {
     
     private static class CardItemupStats {
         protected int itemCode, prob;
+        protected boolean party;
         private List<Pair<Integer, Integer>> areas;
         
-        private CardItemupStats(int code, int prob, List<Pair<Integer, Integer>> areas) {
+        private CardItemupStats(int code, int prob, List<Pair<Integer, Integer>> areas, boolean inParty) {
             this.itemCode = code;
             this.prob = prob;
             this.areas = areas;
+            this.party = inParty;
         }
         
         private boolean isInArea(int mapid) {
@@ -173,8 +175,22 @@ public class MapleStatEffect {
         }
     }
     
-    public boolean isActive(int mapid) {
-        return cardStats == null || cardStats.isInArea(mapid);
+    private boolean isEffectActive(int mapid, boolean partyHunting) {
+        if (cardStats == null) return true;
+        
+        if (!cardStats.isInArea(mapid)) {
+            return false;
+        }
+        
+        if (cardStats.party && !partyHunting) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean isActive(MapleCharacter applyto) {
+        return isEffectActive(applyto.getMapId(), applyto.getPartyMembersOnSameMap().size() > 1);
     }
     
     public int getCardRate(int mapid, int itemid) {
@@ -354,16 +370,27 @@ public class MapleStatEffect {
                 } else if (isMonsterCard(sourceid)) {
                     int prob = 0, itemupCode = Integer.MAX_VALUE;
                     List<Pair<Integer, Integer>> areas = null;
+                    boolean inParty = false;
                     
                     MapleData con = source.getChildByPath("con");
                     if (con != null) {
                         areas = new ArrayList<>(3);
 
                         for (MapleData conData : con.getChildren()) {
-                            int startMap = MapleDataTool.getInt("sMap", conData, 0);
-                            int endMap = MapleDataTool.getInt("eMap", conData, 0);
+                            int type = MapleDataTool.getInt("type", conData, -1);
+                            
+                            if (type == 0) {
+                                int startMap = MapleDataTool.getInt("sMap", conData, 0);
+                                int endMap = MapleDataTool.getInt("eMap", conData, 0);
 
-                            areas.add(new Pair<>(startMap, endMap));
+                                areas.add(new Pair<>(startMap, endMap));
+                            } else if (type == 2) {
+                                inParty = true;
+                            }
+                        }
+                        
+                        if (areas.isEmpty()) {
+                            areas = null;
                         }
                     }
                     
@@ -409,7 +436,7 @@ public class MapleStatEffect {
                         addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MAP_PROTECTION, thaw > 0 ? 1 : 2);
                     }
                     
-                    ret.cardStats = new CardItemupStats(itemupCode, prob, areas);
+                    ret.cardStats = new CardItemupStats(itemupCode, prob, areas, inParty);
                 } else if (isExpIncrease(sourceid)) {
                     addBuffStatPairToListIfNotZero(statups, MapleBuffStat.EXP_INCREASE, MapleDataTool.getInt("expinc", source, 0));
                 }
@@ -1186,7 +1213,7 @@ public class MapleStatEffect {
             mylt = new Point(lt.x + posFrom.x, lt.y + posFrom.y);
             myrb = new Point(rb.x + posFrom.x, rb.y + posFrom.y);
         } else {
-            myrb = new Point(-lt.x + posFrom.x, rb.y + posFrom.y);
+            myrb = new Point(-lt.x + posFrom.x, rb.y + posFrom.y);  // thanks Conrad, April for noticing a disturbance in AoE skill behavior after a hitched refactor here
             mylt = new Point(-rb.x + posFrom.x, lt.y + posFrom.y);
         }
         Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
@@ -1313,7 +1340,7 @@ public class MapleStatEffect {
         if (localstatups.size() > 0) {
             byte[] buff = null;
             byte[] mbuff = null;
-            if (getSummonMovementType() == null && this.isActive(applyto.getMapId())) {
+            if (this.isActive(applyto)) {
                 buff = MaplePacketCreator.giveBuff((skill ? sourceid : -sourceid), localDuration, localstatups);
             }
             if (isDash()) {
@@ -1363,11 +1390,10 @@ public class MapleStatEffect {
             }
 
             if (buff != null) {
-                if (!hasNoIcon()) { //Thanks flav for such a simple release! :)
-                    applyto.announce(buff);
-                } else {
-                    System.out.println("<Error> NO buff icon for id " + sourceid);
-                }
+                //Thanks flav for such a simple release! :)
+                //Thanks Conrad, Atoot for noticing summons not using buff icon
+                
+                applyto.announce(buff);
             }
 
             long starttime = Server.getInstance().getCurrentTime();
@@ -1791,16 +1817,6 @@ public class MapleStatEffect {
                 return SummonMovementType.FOLLOW;
         }
         return null;
-    }
-
-    public boolean hasNoIcon() {
-        return (sourceid == 3111002 || sourceid == 3211002 || + // puppet, puppet
-                sourceid == 3211005 || + // golden eagle
-                sourceid == 2121005 || sourceid == 2221005 || + // elquines, ifrit
-                sourceid == 2321003 || sourceid == 3121006 || + // bahamut, phoenix
-                sourceid == 3221005 || sourceid == 3111005 || + // frostprey, silver hawk
-                sourceid == 2311006 || sourceid == 5220002 || + // summon dragon, wrath of the octopi
-                sourceid == 5211001 || sourceid == 5211002); // octopus, gaviota
     }
 
     public boolean isSkill() {

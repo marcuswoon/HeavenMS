@@ -23,22 +23,22 @@ package server;
 
 import client.inventory.Item;
 import java.util.Calendar;
+import java.sql.Timestamp;
 
-public class DueyPackages {
+public class DueyPackage {
     private String sender = null;
     private Item item = null;
     private int mesos = 0;
-    private int day;
-    private int month;
-    private int year;
+    private String message = "";
+    private Calendar timestamp;
     private int packageId = 0;
 
-    public DueyPackages(int pId, Item item) {
+    public DueyPackage(int pId, Item item) {
         this.item = item;
         packageId = pId;
     }
 
-    public DueyPackages(int pId) { // Meso only package.
+    public DueyPackage(int pId) { // Meso only package.
         this.packageId = pId;
     }
 
@@ -61,20 +61,49 @@ public class DueyPackages {
     public void setMesos(int set) {
         mesos = set;
     }
+    
+    public String getMessage() {
+        return message;
+    }
+    
+    public void setMessage(String m) {
+        message = m;
+    }
 
     public int getPackageId() {
         return packageId;
     }
 
     public long sentTimeInMilliseconds() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day);
-        return cal.getTimeInMillis();
+        Calendar ts = timestamp;
+        if (ts != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(ts.getTime());
+            cal.add(Calendar.MONTH, 1);  // duey representation is in an array of months.
+
+            return cal.getTimeInMillis();
+        } else {
+            return 0;
+        }
+    }
+    
+    public boolean isDeliveringTime() {
+        Calendar ts = timestamp;
+        if (ts != null) {
+            return ts.getTimeInMillis() >= System.currentTimeMillis();
+        } else {
+            return false;
+        }
     }
 
-    public void setSentTime(String sentTime) {
-        day = Integer.parseInt(sentTime.substring(0, 2));
-        month = Integer.parseInt(sentTime.substring(3, 5));
-        year = Integer.parseInt(sentTime.substring(6, 10));
+    public void setSentTime(Timestamp ts) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(ts.getTime());
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        
+        this.timestamp = cal;
     }
 }

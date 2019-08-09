@@ -106,6 +106,7 @@ public class MapleItemInformationProvider {
     protected Map<Integer, String> nameCache = new HashMap<>();
     protected Map<Integer, String> descCache = new HashMap<>();
     protected Map<Integer, String> msgCache = new HashMap<>();
+    protected Map<Integer, Boolean> accountItemRestrictionCache = new HashMap<>();
     protected Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
     protected Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
     protected Map<Integer, Integer> getMesoCache = new HashMap<>();
@@ -1046,7 +1047,7 @@ public class MapleItemInformationProvider {
         return getEquipById(equipId, -1);
     }
 
-    Item getEquipById(int equipId, int ringId) {
+    private Item getEquipById(int equipId, int ringId) {
         Equip nEquip;
         nEquip = new Equip(equipId, (byte) 0, ringId);
         nEquip.setQuantity((short) 1);
@@ -1084,11 +1085,11 @@ public class MapleItemInformationProvider {
                 } else if (stat.getKey().equals("tuc")) {
                     nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
                 } else if (isUntradeableRestricted(equipId)) {  // thanks Hyun & Thora for showing an issue with more than only "Untradeable" items being flagged as such here
-                    byte flag = nEquip.getFlag();
+                    short flag = nEquip.getFlag();
                     flag |= ItemConstants.UNTRADEABLE;
                     nEquip.setFlag(flag);
                 } else if (stats.get("fs") > 0) {
-                    byte flag = nEquip.getFlag();
+                    short flag = nEquip.getFlag();
                     flag |= ItemConstants.SPIKES;
                     nEquip.setFlag(flag);
                     equipCache.put(equipId, nEquip);
@@ -1230,6 +1231,23 @@ public class MapleItemInformationProvider {
         untradeableCache.put(itemId, bRestricted);
         return bRestricted;
     }
+    
+    public boolean isAccountRestricted(int itemId) {
+        if (accountItemRestrictionCache.containsKey(itemId)) {
+            return accountItemRestrictionCache.get(itemId);
+        }
+
+        boolean bRestricted = false;
+        if(itemId != 0) {
+            MapleData data = getItemData(itemId);
+            if (data != null) {
+                bRestricted = MapleDataTool.getIntConvert("info/accountSharable", data, 0) == 1;
+            }
+        }
+
+        accountItemRestrictionCache.put(itemId, bRestricted);
+        return bRestricted;
+    }
 
     public boolean isLootRestricted(int itemId) {
         if (dropRestrictionCache.containsKey(itemId)) {
@@ -1242,7 +1260,7 @@ public class MapleItemInformationProvider {
             if (data != null) {
                 bRestricted = MapleDataTool.getIntConvert("info/tradeBlock", data, 0) == 1;
                 if (!bRestricted) {
-                    bRestricted = MapleDataTool.getIntConvert("info/accountSharable", data, 0) == 1;
+                    bRestricted = isAccountRestricted(itemId);
                 }
             }
         }
@@ -1585,6 +1603,18 @@ public class MapleItemInformationProvider {
         return (eq.getUpgradeSlots() > 0 || eq.getStr() > 0 || eq.getDex() > 0 || eq.getInt() > 0 || eq.getLuk() > 0 ||
                 eq.getWatk() > 0 || eq.getMatk() > 0 || eq.getWdef() > 0 || eq.getMdef() > 0 || eq.getAcc() > 0 ||
                 eq.getAvoid() > 0 || eq.getSpeed() > 0 || eq.getJump() > 0 || eq.getHp() > 0 || eq.getMp() > 0);
+    }
+    
+    public boolean isUnmerchable(int itemId) {
+        if(ServerConstants.USE_ENFORCE_UNMERCHABLE_CASH && isCash(itemId)) {
+            return true;
+        }
+
+        if (ServerConstants.USE_ENFORCE_UNMERCHABLE_PET && ItemConstants.isPet(itemId)) {
+            return true;
+        }
+        
+        return false;
     }
 
     public Collection<Item> canWearEquipment(MapleCharacter chr, Collection<Item> items) {
@@ -1956,7 +1986,8 @@ public class MapleItemInformationProvider {
                 }
                 ps.close();
                 rs.close();
-                makerEntry = new MakerItemCreateEntry(cost, reqLevel, reqMakerLevel, toGive);
+                makerEntry = new MakerItemCreateEntry(cost, reqLevel, reqMakerLevel);
+                makerEntry.addGainItem(toCreate, toGive);
                 ps = con.prepareStatement("SELECT req_item, count FROM makerrecipedata WHERE itemid = ?");
                 ps.setInt(1, toCreate);
                 rs = ps.executeQuery();
@@ -1996,17 +2027,18 @@ public class MapleItemInformationProvider {
         return -1;
     }
 
-    public int getMakerDisassembledQuantity(Integer itemId) {
-        int avail = 0;
+    public List<Pair<Integer, Integer>> getMakerDisassembledItems(Integer itemId) {
+        List<Pair<Integer, Integer>> items = new LinkedList<>();
+        
         Connection con;
         try {
             con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT count FROM makerrecipedata WHERE itemid = ? AND req_item >= 4260000 AND req_item <= 4260008 ORDER BY count DESC");
+            PreparedStatement ps = con.prepareStatement("SELECT req_item, count FROM makerrecipedata WHERE itemid = ? AND req_item >= 4260000 AND req_item < 4270000");
             ps.setInt(1, itemId);
             ResultSet rs = ps.executeQuery();
 
-            if(rs.next()) {
-                avail = (int) Math.ceil(rs.getInt("count") / 2);   // return to the player half of the crystals needed
+            while (rs.next()) {
+                items.add(new Pair<>(rs.getInt("req_item"), rs.getInt("count") / 2));   // return to the player half of the crystals needed
             }
 
             rs.close();
@@ -2016,7 +2048,7 @@ public class MapleItemInformationProvider {
             e.printStackTrace();
         }
 
-        return avail;
+        return items;
     }
 
     public int getMakerDisassembledFee(Integer itemId) {

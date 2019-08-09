@@ -68,6 +68,7 @@ import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
 import server.MapleMarriage;
+import server.expeditions.MapleExpeditionBossLog;
 import server.life.MapleNPC;
 import tools.Pair;
 
@@ -95,7 +96,7 @@ public class AbstractPlayerInteraction {
                 return c.getPlayer().getMap();
         }
         
-        public static int getHourOfDay() {
+        public int getHourOfDay() {
                 return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         }
         
@@ -103,7 +104,7 @@ public class AbstractPlayerInteraction {
             return getMarketPortalId(getWarpMap(mapId));
         }
         
-        private static int getMarketPortalId(MapleMap map) {
+        private int getMarketPortalId(MapleMap map) {
             return (map.findMarketPortal() != null) ? map.findMarketPortal().getId() : map.getRandomPlayerSpawnpoint().getId();
         }
         
@@ -235,25 +236,43 @@ public class AbstractPlayerInteraction {
                 return canHoldAllAfterRemoving(Collections.singletonList(itemid), Collections.singletonList(quantity), Collections.singletonList(removeItemid), Collections.singletonList(removeQuantity));
         }
         
-        private static List<Integer> convertToIntegerArray(List<Double> list) {
-                List<Integer> intList = new LinkedList<>();
-                for(Double d: list) {
-                        intList.add(d.intValue());
+        private List<Integer> convertToIntegerArray(List<Object> list) {
+                List<Integer> intList = new ArrayList<>();      // JAVA 7 Rhino script engine. Thanks Bruno, felipepm10 for noticing a typecast issue here.
+                
+                if (ServerConstants.JAVA_8) {
+                        for (Object d: list) {
+                                intList.add(((Integer) d).intValue());
+                        }
+                } else {
+                        for (Object d: list) {
+                                intList.add(((Double) d).intValue());
+                        }
                 }
 
                 return intList;
         }
         
-        public boolean canHoldAll(List<Double> itemids) {
-                List<Double> quantity = new LinkedList<>();
-                for (int i = 0; i < itemids.size(); i++) {
-                        quantity.add(1.0);
+        public boolean canHoldAll(List<Object> itemids) {
+                List<Object> quantity = new LinkedList<>();
+                
+                if (ServerConstants.JAVA_8) {
+                        Integer intOne = 1;
+                    
+                        for (int i = 0; i < itemids.size(); i++) {
+                                quantity.add(intOne);
+                        }
+                } else {
+                        Double doubleOne = 1.0;
+                    
+                        for (int i = 0; i < itemids.size(); i++) {
+                                quantity.add(doubleOne);
+                        }
                 }
-            
+                
                 return canHoldAll(itemids, quantity);
         }
         
-        public boolean canHoldAll(List<Double> itemids, List<Double> quantity) {
+        public boolean canHoldAll(List<Object> itemids, List<Object> quantity) {
                 return canHoldAll(convertToIntegerArray(itemids), convertToIntegerArray(quantity), true);
         }
         
@@ -269,7 +288,7 @@ public class AbstractPlayerInteraction {
             return MapleInventory.checkSpots(c.getPlayer(), addedItems, false);
         }
         
-        private static List<Pair<Item, MapleInventoryType>> prepareProofInventoryItems(List<Pair<Integer, Integer>> items) {
+        private List<Pair<Item, MapleInventoryType>> prepareProofInventoryItems(List<Pair<Integer, Integer>> items) {
             List<Pair<Item, MapleInventoryType>> addedItems = new LinkedList<>();
             for(Pair<Integer, Integer> p : items) {
                 Item it = new Item(p.getLeft(), (short) 0, p.getRight().shortValue());
@@ -279,7 +298,7 @@ public class AbstractPlayerInteraction {
             return addedItems;
         }
         
-        private static List<List<Pair<Integer, Integer>>> prepareInventoryItemList(List<Integer> itemids, List<Integer> quantity) {
+        private List<List<Pair<Integer, Integer>>> prepareInventoryItemList(List<Integer> itemids, List<Integer> quantity) {
             int size = Math.min(itemids.size(), quantity.size());
             
             List<List<Pair<Integer, Integer>>> invList = new ArrayList<>(6);
@@ -947,7 +966,7 @@ public class AbstractPlayerInteraction {
 		c.announce(MaplePacketCreator.modifyInventory(false, Collections.singletonList(new ModifyInventory(0, newItem))));
 	}
         
-        public static void spawnNpc(int npcId, Point pos, MapleMap map) {
+        public void spawnNpc(int npcId, Point pos, MapleMap map) {
                 MapleNPC npc = MapleLifeFactory.getNPC(npcId);
                 if (npc != null) {
                         npc.setPosition(pos);
@@ -966,11 +985,11 @@ public class AbstractPlayerInteraction {
 		getPlayer().getMap().spawnMonster(monster);
 	}
         
-	public static MapleMonster getMonsterLifeFactory(int mid) {
+	public MapleMonster getMonsterLifeFactory(int mid) {
 		return MapleLifeFactory.getMonster(mid);
 	}
         
-        public static MobSkill getMobSkill(int skill, int level) {
+        public MobSkill getMobSkill(int skill, int level) {
 		return MobSkillFactory.getMobSkill(skill, level);
 	}
 
@@ -1067,18 +1086,29 @@ public class AbstractPlayerInteraction {
 		return (Pyramid) getPlayer().getPartyQuest();
 	}
 
-        public boolean createExpedition(MapleExpeditionType type) {
+        public int createExpedition(MapleExpeditionType type) {
                 return createExpedition(type, false, 0, 0);
         }
         
-	public boolean createExpedition(MapleExpeditionType type, boolean silent, int minPlayers, int maxPlayers) {
-		MapleExpedition exped = new MapleExpedition(getPlayer(), type, silent, minPlayers, maxPlayers);
-		return getPlayer().getClient().getChannelServer().addExpedition(exped);
+	public int createExpedition(MapleExpeditionType type, boolean silent, int minPlayers, int maxPlayers) {
+                MapleCharacter player = getPlayer();
+                MapleExpedition exped = new MapleExpedition(player, type, silent, minPlayers, maxPlayers);
+                
+                int channel = player.getMap().getChannelServer().getId();
+                if (!MapleExpeditionBossLog.attemptBoss(player.getId(), channel, exped, false)) {    // thanks Conrad for noticing missing expeditions entry limit
+                        return 1;
+                }
+                
+                if (exped.addChannelExpedition(player.getClient().getChannelServer())) {
+                        return 0;
+                } else {
+                        return -1;
+                }
 	}
 
 	public void endExpedition(MapleExpedition exped) {
 		exped.dispose(true);
-		getPlayer().getClient().getChannelServer().removeExpedition(exped);
+		exped.removeChannelExpedition(getPlayer().getClient().getChannelServer());
 	}
 
 	public MapleExpedition getExpedition(MapleExpeditionType type) {
@@ -1153,7 +1183,7 @@ public class AbstractPlayerInteraction {
                 }
         }
         
-        public static String getFirstJobStatRequirement(int jobType) {
+        public String getFirstJobStatRequirement(int jobType) {
                 switch(jobType) {
                     case 1:
                         return "STR " + 35;

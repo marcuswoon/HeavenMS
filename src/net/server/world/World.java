@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -96,6 +97,8 @@ import net.server.coordinator.MapleInviteCoordinator.InviteResult;
 import net.server.coordinator.MapleInviteCoordinator.InviteType;
 import net.server.coordinator.MapleMatchCheckerCoordinator;
 import net.server.coordinator.MaplePartySearchCoordinator;
+import server.maps.MapleMiniDungeon;
+import server.maps.MapleMiniDungeonInfo;
 
 /**
  *
@@ -128,7 +131,7 @@ public class World {
     
     private Set<Integer> queuedGuilds = new HashSet<>();
     private Map<Integer, Pair<Pair<Boolean, Boolean>, Pair<Integer, Integer>>> queuedMarriages = new HashMap<>();
-    private Map<Integer, Set<Integer>> marriageGuests = new HashMap<>();
+    private Map<Integer, Set<Integer>> marriageGuests = new ConcurrentHashMap<>();
     
     private Map<Integer, Integer> partyChars = new HashMap<>();
     private Map<Integer, MapleParty> parties = new HashMap<>();
@@ -718,7 +721,7 @@ public class World {
         return new Pair<>(type, guests);
     }
     
-    public synchronized boolean addMarriageGuest(int marriageId, int playerId) {
+    public boolean addMarriageGuest(int marriageId, int playerId) {
         Set<Integer> guests = marriageGuests.get(marriageId);
         if(guests != null) {
             if(guests.contains(playerId)) return false;
@@ -927,10 +930,23 @@ public class World {
                 break;
             case CHANGE_LEADER:
                 MapleCharacter mc = party.getLeader().getPlayer();
+                MapleCharacter newLeader = target.getPlayer();
+                
                 EventInstanceManager eim = mc.getEventInstance();
                 
                 if(eim != null && eim.isEventLeader(mc)) {
-                    eim.changedLeader(target.getPlayer());
+                    eim.changedLeader(newLeader);
+                } else {
+                    int oldLeaderMapid = mc.getMapId();
+                    
+                    if (MapleMiniDungeonInfo.isDungeonMap(oldLeaderMapid)) {
+                        if (oldLeaderMapid != newLeader.getMapId()) {
+                            MapleMiniDungeon mmd = newLeader.getClient().getChannelServer().getMiniDungeon(oldLeaderMapid);
+                            if(mmd != null) {
+                                mmd.close();
+                            }
+                        }
+                    }
                 }
                 party.setLeader(target);
                 break;

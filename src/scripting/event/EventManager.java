@@ -21,6 +21,8 @@
 */
 package scripting.event;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.api.scripting.ScriptUtils;
 import tools.exceptions.EventInstanceInProgressException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -165,23 +167,31 @@ public class EventManager {
         startLock = startLock.dispose();
     }
     
-    private static List<Integer> convertToIntegerArray(List<Double> list) {
+    private List<Integer> convertToIntegerArray(List<Object> list) {
         List<Integer> intList = new ArrayList<>();
-        for(Double d: list) intList.add(d.intValue());
-
+        
+        if (ServerConstants.JAVA_8) {
+            for (Object d: list) {
+                intList.add(((Integer) d).intValue());
+            }
+        } else {
+            for (Object d: list) {
+                intList.add(((Double) d).intValue());
+            }
+        }
+        
         return intList;
     }
     
-    public static long getLobbyDelay() {
+    public long getLobbyDelay() {
         return ServerConstants.EVENT_LOBBY_DELAY;
     }
     
     private List<Integer> getLobbyRange() {
         try {
             if (!ServerConstants.JAVA_8) {
-                return convertToIntegerArray((List<Double>)iv.invokeFunction("setLobbyRange", (Object) null));
+                return convertToIntegerArray((List<Object>)iv.invokeFunction("setLobbyRange", (Object) null));
             } else {  // java 8 support here thanks to MedicOP
-                /*
                 ScriptObjectMirror object = (ScriptObjectMirror) iv.invokeFunction("setLobbyRange", (Object) null);
                 int[] to = object.to(int[].class);
                 List<Integer> list = new ArrayList<>();
@@ -189,9 +199,7 @@ public class EventManager {
                     list.add(i);
                 }
                 return list;
-                */
-                
-                throw new NoSuchMethodException();
+
             }
         } catch (ScriptException | NoSuchMethodException ex) { // they didn't define a lobby range
             List<Integer> defaultRange = new ArrayList<>();
@@ -750,13 +758,12 @@ public class EventManager {
             if(p != null) {
                 List<MaplePartyCharacter> lmpc;
                 
-                /*if(ServerConstants.JAVA_8) {
+                if(ServerConstants.JAVA_8) {
                     lmpc = new ArrayList<>(((Map<String, MaplePartyCharacter>)(ScriptUtils.convert(p, Map.class))).values());
                 } else {
                     lmpc = new ArrayList<>((List<MaplePartyCharacter>) p);
-                }*/
-                
-                lmpc = new ArrayList<>((List<MaplePartyCharacter>) p);
+                }
+
                 party.setEligibleMembers(lmpc);
                 return lmpc;
             }

@@ -19,15 +19,15 @@
 */
 package net.server.worker;
 
-import client.processor.FredrickProcessor;
+import server.expeditions.MapleExpeditionBossLog;
 
 /**
  * @author Ronan
  */
-public class FredrickWorker implements Runnable {
+public class BossLogWorker implements Runnable {
     
     @Override
     public void run() {
-        FredrickProcessor.runFredrickSchedule();
+        MapleExpeditionBossLog.resetBossLogTable();
     }
 }

@@ -36,6 +36,7 @@ import client.inventory.ModifyInventory;
 import client.inventory.manipulator.MapleInventoryManipulator;
 import client.inventory.manipulator.MapleKarmaManipulator;
 import client.processor.AssignAPProcessor;
+import client.processor.DueyProcessor;
 import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
@@ -47,7 +48,6 @@ import java.util.List;
 
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
-import scripting.npc.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.MapleShop;
 import server.MapleShopFactory;
@@ -189,7 +189,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                 if (eq == null) { //Check if the type is EQUIPMENT?
                     return;
                 }
-                byte flag = eq.getFlag();
+                short flag = eq.getFlag();
                 flag |= ItemConstants.LOCK;
                 if (eq.getExpiration() > -1) {
                     return; //No perma items pls
@@ -294,11 +294,9 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                         if (item == null) //hack
                         {
                             return;
-                        } else if (item.isUntradeable()) {
-                            player.dropMessage(1, "You cannot trade this item.");
-                            c.announce(MaplePacketCreator.enableActions());
-                            return;
                         }
+                        
+                        // thanks Conrad for noticing that untradeable items should be allowed in megas
                     }
                     Server.getInstance().broadcastMessage(c.getWorld(), MaplePacketCreator.itemMegaphone(msg, whisper, c.getChannel(), item));
                     break;
@@ -398,7 +396,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             ii.getItemEffect(itemId).applyTo(player);
             remove(c, position, itemId);
         } else if (itemType == 533) {
-            NPCScriptManager.getInstance().start(c, 9010009, null);
+            DueyProcessor.dueySendTalk(c, true);
         } else if (itemType == 537) {
             if (GameConstants.isFreeMarketRoom(player.getMapId())) {
                 player.dropMessage(5, "You cannot use the chalkboard here.");
@@ -409,7 +407,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             player.setChalkboard(slea.readMapleAsciiString());
             player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));
             player.getClient().announce(MaplePacketCreator.enableActions());
-            remove(c, position, itemId);
+            //remove(c, position, itemId);  thanks Conrad for noticing chalkboards shouldn't be depleted upon use
         } else if (itemType == 539) {
             List<String> strLines = new LinkedList<>();
             for (int i = 0; i < 4; i++) {
@@ -425,6 +423,24 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             	}
             }, 1000 * 10);
             remove(c, position, itemId);
+        } else if (itemType == 540) {
+            slea.readByte();
+            slea.readInt();
+            if(itemId == 5400000) { //name change
+                if(player.cancelPendingNameChange()) {
+                    player.dropMessage(1, "Successfully canceled pending name change.");
+                } else {
+                    player.dropMessage(1, "You do not have a pending name change.");
+                }
+            } else if(itemId == 5401000) { //world transfer
+                if(player.cancelPendingWorldTranfer()) {
+                    player.dropMessage(1, "Successfully canceled pending world transfer.");
+                } else {
+                    player.dropMessage(1, "You do not have a pending world transfer.");
+                }
+            }
+            remove(c, position, itemId);
+            c.announce(MaplePacketCreator.enableActions());
         } else if (itemType == 543) {
             if(itemId == 5432000 && !c.gainCharacterSlot()) {
                 player.dropMessage(1, "You have already used up all 12 extra character slots.");
@@ -569,7 +585,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                     client.announce(MaplePacketCreator.modifyInventory(true, mods));
 
                     ScrollResult scrollResult = scrolled.getLevel() > curlevel ? ScrollResult.SUCCESS : ScrollResult.FAIL;
-                    player.getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(player.getId(), scrollResult, false));
+                    player.getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(player.getId(), scrollResult, false, false));
                     if (eSlot < 0 && (scrollResult == ScrollResult.SUCCESS)) {
                         player.equipChanged();
                     }

@@ -49,7 +49,6 @@ import tools.data.input.LittleEndianAccessor;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleJob;
-import client.MapleStat;
 import client.Skill;
 import client.SkillFactory;
 import client.autoban.AutobanFactory;
@@ -135,8 +134,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         }
     }
 
-    protected synchronized void applyAttack(AttackInfo attack, final MapleCharacter player, int attackCount) {
-        if (player.getMap().isOwnershipRestricted(player)) {
+    protected void applyAttack(AttackInfo attack, final MapleCharacter player, int attackCount) {
+        final MapleMap map = player.getMap();
+        if (map.isOwnershipRestricted(player)) {
             return;
         }
         
@@ -151,7 +151,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 theSkill = SkillFactory.getSkill(GameConstants.getHiddenSkill(attack.skill)); //returns back the skill id if its not a hidden skill so we are gucci
                 attackEffect = attack.getAttackEffect(player, theSkill);
                 if (attackEffect == null) {
-                    player.getClient().announce(MaplePacketCreator.enableActions());
+                    player.announce(MaplePacketCreator.enableActions());
                     return;
                 }
 
@@ -177,7 +177,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             }
                         }
                     } else {
-                        player.getClient().announce(MaplePacketCreator.enableActions());
+                        player.announce(MaplePacketCreator.enableActions());
                     }
                 }
                 
@@ -196,7 +196,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             }*/
             
             int totDamage = 0;
-            final MapleMap map = player.getMap();
 
             if (attack.skill == ChiefBandit.MESO_EXPLOSION) {
                 int delay = 0;
@@ -309,7 +308,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                     TimerManager.getInstance().schedule(new Runnable() {
                                         @Override
                                         public void run() {
-                                            player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachdf / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, player, true, (byte) 2);
+                                            map.spawnMesoDrop(Math.min((int) Math.max(((double) eachdf / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, player, true, (byte) 2);
                                         }
                                     }, delay);
                                     delay += 100;
@@ -334,7 +333,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                                     List<MonsterDropEntry> toSteal = new ArrayList<>();
                                     toSteal.add(mi.retrieveDrop(monster.getId()).get(i));
                                     
-                                    player.getMap().dropItemsFromMonster(toSteal, player, monster);
+                                    map.dropItemsFromMonster(toSteal, player, monster);
                                     monster.addStolen(toSteal.get(0).itemId);
                                 }
                             }
@@ -522,7 +521,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         
                         map.damageMonster(player, monster, totDamageToOneMonster);
                     }
-                    if (monster.isBuffed(MonsterStatus.WEAPON_REFLECT)) {
+                    if (monster.isBuffed(MonsterStatus.WEAPON_REFLECT) && !attack.magic) {
                         List<Pair<Integer, Integer>> mobSkills = monster.getSkills();
                         
                         for (Pair<Integer, Integer> ms : mobSkills) {
@@ -533,13 +532,14 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                             }
                         }
                     }                
-                    if (monster.isBuffed(MonsterStatus.MAGIC_REFLECT)) {
+                    if (monster.isBuffed(MonsterStatus.MAGIC_REFLECT) && attack.magic) {
                         List<Pair<Integer, Integer>> mobSkills = monster.getSkills();
                         
                         for (Pair<Integer, Integer> ms : mobSkills) {
                             if (ms.left == 145) {
                                 MobSkill toUse = MobSkillFactory.getMobSkill(ms.left, ms.right);
-                                player.addMP(-toUse.getY());
+                                player.addHP(-toUse.getY());
+                                map.broadcastMessage(player, MaplePacketCreator.damagePlayer(0, monster.getId(), player.getId(), toUse.getY(), 0, 0, false, 0, true, monster.getObjectId(), 0, 0), true);
                             }
                         }
                     }
@@ -650,7 +650,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
         
         // Find the base damage to base futher calculations on.
         // Several skills have their own formula in this section.
-        int calcDmgMax = 0;	
+        long calcDmgMax = 0;	
         
         if(magic && ret.skill != 0) {
             calcDmgMax = (chr.getTotalMagic() * chr.getTotalMagic() / 1000 + chr.getTotalMagic()) / 30 + chr.getTotalInt() / 200;
@@ -714,7 +714,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             if(comboBuff > 6) {
                 // Advanced Combo
                 MapleStatEffect ceffect = SkillFactory.getSkill(advcomboid).getEffect(chr.getSkillLevel(advcomboid));
-                calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + 0.20 + (comboBuff - 5) * 0.04);
+                calcDmgMax = (long) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + 0.20 + (comboBuff - 5) * 0.04);
             } else {
                 // Normal Combo
                 int skillLv = chr.getSkillLevel(oid);
@@ -722,7 +722,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                 
                 if(skillLv > 0) {
                     MapleStatEffect ceffect = SkillFactory.getSkill(oid).getEffect(skillLv);
-                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + Math.floor((comboBuff - 1) * (skillLv / 6)) / 100);
+                    calcDmgMax = (long) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + Math.floor((comboBuff - 1) * (skillLv / 6)) / 100);
                 }
             }
             
@@ -850,7 +850,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
             
             for (int j = 0; j < ret.numDamage; j++) {
                     int damage = lea.readInt();
-                    int hitDmgMax = calcDmgMax;
+                    long hitDmgMax = calcDmgMax;
                     if(ret.skill == Buccaneer.BARRAGE || ret.skill == ThunderBreaker.BARRAGE) {
                         if(j > 3)
                             hitDmgMax *= Math.pow(2, (j - 3));
@@ -870,7 +870,7 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                         hitDmgMax = 82569000; // 30% of Max HP of strongest Dojo boss
                     }
 
-                    int maxWithCrit = hitDmgMax;
+                    long maxWithCrit = hitDmgMax;
                     if(canCrit) // They can crit, so up the max.
                             maxWithCrit *= 2;
 

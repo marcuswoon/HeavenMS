@@ -51,10 +51,8 @@ public class ServerConstants {
     public static boolean LOCALSERVER;
 
     //Other Configuration
-    public static boolean JAVA_8;
+    public static final boolean JAVA_8 = getJavaVersion() >= 8;
     public static boolean SHUTDOWNHOOK;
-    // JAVA_8: every static function in AbstractPlayerInteraction are to be made non-static, and code comment sections uncommented after enabling this functionality.
-    
     
     //Server Flags
     public static final boolean USE_CUSTOM_KEYSET = true;           //Enables auto-setup of the HeavenMS's custom keybindings when creating characters.
@@ -94,7 +92,7 @@ public class ServerConstants {
     public static final boolean USE_ENFORCE_JOB_LEVEL_RANGE = false;//Caps the player level on the minimum required to advance their current jobs.
     public static final boolean USE_ENFORCE_JOB_SP_RANGE = false;   //Caps the player SP level on the total obtainable by their current jobs. After changing jobs, missing SP will be retrieved.
     public static final boolean USE_ENFORCE_ITEM_SUGGESTION = false;//Forces the Owl of Minerva and the Cash Shop to always display the defined item array instead of those featured by the players.
-    public static final boolean USE_ENFORCE_UNMERCHABLE_CASH = false;//Forces players to not sell CASH items via merchants.
+    public static final boolean USE_ENFORCE_UNMERCHABLE_CASH = true;//Forces players to not sell CASH items via merchants.
     public static final boolean USE_ENFORCE_UNMERCHABLE_PET = false; //Forces players to not sell pets via merchants. (since non-named pets gets dirty name and other possible DB-related issues)
     public static final boolean USE_ENFORCE_MERCHANT_SAVE = true;   //Forces automatic DB save on merchant owners, at every item movement on shop.
     public static final boolean USE_ENFORCE_MDOOR_POSITION = false; //Forces mystic door to be spawned near spawnpoints.
@@ -112,13 +110,14 @@ public class ServerConstants {
     public static final boolean USE_ENABLE_CHAT_LOG = false;        //Write in-game chat to log
     public static final boolean USE_REBIRTH_SYSTEM = false;         //Flag to enable/disable rebirth system
     public static final boolean USE_MAP_OWNERSHIP_SYSTEM = true;    //Flag to enable/disable map ownership system
-    public static final boolean USE_FISHING_SYSTEM = true;          //Flag to enable/disable fishing system
+    public static final boolean USE_FISHING_SYSTEM = true;          //Flag to enable/disable custom fishing system
     public static final boolean USE_NPCS_SCRIPTABLE = true;         //Flag to enable/disable serverside predefined script NPCs.
     
     //Events/PQs Configuration
-    public static final boolean USE_OLD_GMS_STYLED_PQ_NPCS = true;  //Enables PQ NPCs with similar behaviour to old GMS style, that skips info about the PQs and immediately tries to register the party in.
-    public static final boolean USE_ENABLE_SOLO_EXPEDITIONS = true; //Enables start expeditions with any number of players. This will also bypass all the Zakum prequest.
-    public static final boolean USE_ENABLE_RECALL_EVENT = true;     //Enables a disconnected player to reaccess the last event instance they were in before logging out. Recall only works if the event isn't cleared or disposed yet. Suggestion thanks to Alisson (Goukken).
+    public static final boolean USE_OLD_GMS_STYLED_PQ_NPCS = true;   //Enables PQ NPCs with similar behaviour to old GMS style, that skips info about the PQs and immediately tries to register the party in.
+    public static final boolean USE_ENABLE_SOLO_EXPEDITIONS = true;  //Enables start expeditions with any number of players. This will also bypass all the Zakum prequest.
+    public static final boolean USE_ENABLE_DAILY_EXPEDITIONS = false;//Enables daily entry limitations in expeditions.
+    public static final boolean USE_ENABLE_RECALL_EVENT = false;      //Enables a disconnected player to reaccess the last event instance they were in before logging out. Recall only works if the event isn't cleared or disposed yet. Suggestion thanks to Alisson (Goukken).
     
     //Announcement Configuration
     public static final boolean USE_ANNOUNCE_SHOPITEMSOLD = false;  //Automatic message sent to owner when an item from the Player Shop or Hired Merchant is sold.
@@ -127,6 +126,8 @@ public class ServerConstants {
     //Cash Shop Configuration
     public static final boolean USE_JOINT_CASHSHOP_INVENTORY = true;//Enables usage of a same cash shop inventory for explorers, cygnus and legends. Items from exclusive cash shop inventories won't show up on the shared inventory, though.
     public static final boolean USE_CLEAR_OUTDATED_COUPONS = true;  //Enables deletion of older code coupon registry from the DB, freeing so-long irrelevant data.
+    public static final boolean ALLOW_CASHSHOP_NAME_CHANGE = true;  //Allows players to buy name changes in the cash shop.
+    public static final boolean ALLOW_CASHSHOP_WORLD_TRANSFER =true;//Allows players to buy world transfers in the cash shop.
     
     //Maker Configuration
     public static final boolean USE_MAKER_PERMISSIVE_ATKUP = true;  //Allows players to use attack-based strengthening gems on non-weapon items.
@@ -150,15 +151,18 @@ public class ServerConstants {
     public static final int TRAVEL_RATE = 10;                       //Means of transportation rides/departs using 1/N of the default time.
     
     public static final double EQUIP_EXP_RATE = 1.0;                //Rate for equipment exp gain, grows linearly. Set 1.0 for default (about 100~200 same-level range mobs killed to pass equip from level 1 to 2).
-    public static final float PARTY_BONUS_EXP_RATE = 1.0f;          //Rate for the party exp bonus reward.
     public static final double PQ_BONUS_EXP_RATE = 0.5;             //Rate for the PQ exp reward.
+    
+    public static final byte EXP_SPLIT_LEVEL_INTERVAL = 5;          //Non-contributing players must be within N level between the mob to receive EXP.
+    public static final byte EXP_SPLIT_LEECH_INTERVAL = 5;          //Non-contributing players must be within N level between any contributing party member to receive EXP.
+    public static final float EXP_SPLIT_MVP_MOD = 0.2f;
+    public static final float EXP_SPLIT_COMMON_MOD = 0.8f;
+    public static final float PARTY_BONUS_EXP_RATE = 1.0f;          //Rate for the party exp bonus reward.
     
     //Miscellaneous Configuration
     public static String TIMEZONE = "GMT-3";
     public static boolean USE_DISPLAY_NUMBERS_WITH_COMMA = true;        //Enforce comma on displayed strings (use this when USE_UNITPRICE_WITH_COMMA is active and you still want to display comma-separated values).
     public static boolean USE_UNITPRICE_WITH_COMMA = true;              //Set this accordingly with the layout of the unitPrices on Item.wz XML's, whether it's using commas or dots to represent fractions.
-    public static final byte MIN_UNDERLEVEL_TO_EXP_GAIN = 20;           //Characters are unable to get EXP from a mob if their level are under this threshold, only if "USE_ENFORCE_MOB_LEVEL_RANGE" is enabled. For bosses, this attribute is doubled.
-    public static final byte MIN_RANGELEVEL_TO_EXP_LEECH = 40;          //Characters are unable to leech EXP from party member kills whose level difference are past this limit.
     public static final byte MAX_MONITORED_BUFFSTATS = 5;               //Limits accounting for "dormant" buff effects, that should take place when stronger stat buffs expires.
     public static final int MAX_AP = 32767;                             //Max AP allotted on the auto-assigner.
     public static final int MAX_EVENT_LEVELS = 8;                       //Event has different levels of rewarding system.
@@ -167,6 +171,9 @@ public class ServerConstants {
     public static final int TOT_MOB_QUEST_REQUIREMENT = 77;             //Overwrites old 999-mobs requirement for the ToT questline with new requirement value, set 0 for default.
     public static final int MOB_REACTOR_REFRESH_TIME = 30 * 1000;       //Overwrites refresh time for those reactors oriented to inflict damage to bosses (Ice Queen, Riche), set 0 for default.
     public static final int PARTY_SEARCH_REENTRY_LIMIT = 10;            //Max amount of times a party leader is allowed to persist on the Party Search before entry expiration (thus needing to manually restart the Party Search to be able to search for members).
+    public static final int NAME_CHANGE_COOLDOWN = 30*24*60*60*1000;    //Cooldown for name changes, default (GMS) is 30 days.
+    public static final int WORLD_TRANSFER_COOLDOWN=NAME_CHANGE_COOLDOWN;//Cooldown for world tranfers, default is same as name change (30 days).
+    public static final boolean INSTANT_NAME_CHANGE = false;            //Whether or not to wait for server restart to apply name changes. Does on reconnect otherwise (requires queries on every login).
     
     //Dangling Items/Locks Configuration
     public static final int ITEM_EXPIRE_TIME  = 3 * 60 * 1000;  //Time before items start disappearing. Recommended to be set up to 3 minutes.
@@ -207,6 +214,7 @@ public class ServerConstants {
     public static final boolean USE_FAST_REUSE_HERO_WILL = true;//Greatly reduce cooldown on Hero's Will.
     public static final boolean USE_ANTI_IMMUNITY_CRASH = true; //Crash skills additionally removes the mob's invincibility buffs. Suggestion thanks to Celestial.
     public static final boolean USE_UNDISPEL_HOLY_SHIELD = true;//Holy shield buff also prevents players from suffering dispel from mobs.
+    public static final boolean USE_FULL_HOLY_SYMBOL = true;    //Holy symbol doesn't require EXP sharers to work in full.
     
     //Character Configuration
     public static final boolean USE_ADD_SLOTS_BY_LEVEL = true;  //Slots are added each 20 levels.
@@ -315,8 +323,7 @@ public class ServerConstants {
             ServerConstants.DB_USER = p.getProperty("DB_USER");
             ServerConstants.DB_PASS = p.getProperty("DB_PASS");
 
-            //java8 And Shutdownhook
-            ServerConstants.JAVA_8 = p.getProperty("JAVA8").equalsIgnoreCase("TRUE");
+            // shutdownhook
             ServerConstants.SHUTDOWNHOOK = p.getProperty("SHUTDOWNHOOK").equalsIgnoreCase("true");
 
         } catch (Exception e) {
@@ -324,5 +331,26 @@ public class ServerConstants {
             System.out.println("Failed to load configuration.ini.");
             System.exit(0);
         }
+    }
+    // https://github.com/openstreetmap/josm/blob/a3a6e8a6b657cf4c5b4c64ea14d6e87be6280d65/src/org/openstreetmap/josm/tools/Utils.java#L1566-L1585
+    /**
+     * Returns the Java version as an int value.
+     * @return the Java version as an int value (8, 9, etc.)
+     * @since 12130
+     */
+    public static int getJavaVersion() {
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2);
+        }
+        // Allow these formats:
+        // 1.8.0_72-ea
+        // 9-ea
+        // 9
+        // 9.0.1
+        int dotPos = version.indexOf('.');
+        int dashPos = version.indexOf('-');
+        return Integer.parseInt(version.substring(0,
+                dotPos > -1 ? dotPos : dashPos > -1 ? dashPos : 1));
     }
 }
